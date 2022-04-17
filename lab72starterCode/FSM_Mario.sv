@@ -1,68 +1,29 @@
 
 
-module ISDU (   input logic         Clk, 
+module FSM_Mario (   input logic         Clk, 
 									Reset,
 									Run,
 									Continue,
+									is_ground,
 									
-				input logic[3:0]    Opcode, 
-				input logic         IR_5,
-				input logic         IR_11,
-				input logic         BEN,
+				input logic[7:0]    keycode,
 				  
-				output logic        LD_MAR,
-									LD_MDR,
-									LD_IR,
-									LD_BEN,
-									LD_CC,
-									LD_REG,
-									LD_PC,
-									LD_LED, // for PAUSE instruction
-									
-				output logic        GatePC,
-									GateMDR,
-									GateALU,
-									GateMARMUX,
-									
-				output logic [1:0]  PCMUX,
-				output logic        DRMUX,
-									SR1MUX,
-									SR2MUX,
-									ADDR1MUX,
-				output logic [1:0]  ADDR2MUX,
-									ALUK,
 				  
-				output logic        Mem_OE,
-									Mem_WE
+				output logic[2:0]   right_accel,
+										  left_accel,
+										  up_accel,
+										  down_accel,
+				output logic 		  stand_still;
 				);
 
-	enum logic [4:0] {  Halted, 
-						PauseIR1,
-						PauseIR2,
-						S_18, 
-						S_33_1,
-						S_33_2,
-					   S_33_3, //adding for third cycle	
-						S_35,
-						S_32,
-						S_01,
-						S_05,
-						S_09,
-						S_00,
-						S_22,
-						S_12,
-						S_04,
-						S_21,
-						S_06,
-						S_25,
-						S_25_2,
-						S_25_3,	//cycles
-						S_27,
-						S_07,
-						S_23,
-						S_16,
-						S_16_2,
-						S_16_3	//cycles
+	enum logic [4:0] {  
+						Jumping,
+						Falling,
+						Falling_right,
+						Falling_left,
+						Standing,
+						Walking_left,
+						Walking_right
 						}   State, Next_state;   // Internal state logic
 		
 	always_ff @ (posedge Clk)
@@ -79,31 +40,10 @@ module ISDU (   input logic         Clk,
 		Next_state = State;
 		
 		// Default controls signal values
-		LD_MAR = 1'b0;
-		LD_MDR = 1'b0;
-		LD_IR = 1'b0;
-		LD_BEN = 1'b0;
-		LD_CC = 1'b0;
-		LD_REG = 1'b0;
-		LD_PC = 1'b0;
-		LD_LED = 1'b0;
-		 
-		GatePC = 1'b0;
-		GateMDR = 1'b0;
-		GateALU = 1'b0;
-		GateMARMUX = 1'b0;
-		 
-		ALUK = 2'b00;
-		 
-		PCMUX = 2'b00;
-		DRMUX = 1'b0;
-		SR1MUX = 1'b0;
-		SR2MUX = 1'b0;
-		ADDR1MUX = 1'b0;
-		ADDR2MUX = 2'b00;
-		 
-		Mem_OE = 1'b0;
-		Mem_WE = 1'b0;
+		down_accel = 3'b000;
+		up_accel = 3'b000;
+		right_accel = 3'b000;
+		left_accel = 3'b000;
 	
 		// Assign next state
 		unique case (State)

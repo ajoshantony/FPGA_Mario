@@ -80,6 +80,7 @@ module  ball ( input Reset, frame_clk,
 		  //of the changes to the code.
 		  
 		  
+		  //read comments on each line, changed all the conditional logic
 		  if ( (Ball_Y_Pos ) >= Ball_Y_Max - 5'b10000 )  // Mario is at bottom of screen, on the floor
 					  Ball_Y_Motion <= 0;  // Zero out the motion (maybe need to push back Mario as well if he clips through)
 					  

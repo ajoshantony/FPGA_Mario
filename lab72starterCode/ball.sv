@@ -87,7 +87,7 @@ module  ball ( input Reset, frame_clk,
 				 else if ( (Ball_Y_Pos - Ball_Size) <= Ball_Y_Min )  // Mario has hit the top of the screen. Stop motion.
 					  Ball_Y_Motion <= 0;
 					  
-				 else if ( (Ball_X_Pos + Ball_Size) >= Ball_X_Max - 5'b10000)  // Mario is on right side of screen, stop motion
+				 else if ( (Ball_X_Pos + Ball_Size) >= Ball_X_Max - 5'b10000)  //Mario is on right side of screen, stop motion
 					  Ball_X_Motion <= 0;  // 2's complement.
 					  
 				 else if ( (Ball_X_Pos - Ball_Size) <= Ball_X_Min )  // Mario is on left side of screen. Stop

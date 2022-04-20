@@ -121,7 +121,7 @@ logic Reset_h, vssig, blank, sync, VGA_Clk;
 	assign VGA_G = Green[7:4];
 	
 	
-	lab62soc u0 (
+	lab7soc u0 (
 		.clk_clk                           (MAX10_CLK1_50),  //clk.clk
 		.reset_reset_n                     (1'b1),           //reset.reset_n
 		.altpll_0_locked_conduit_export    (),               //altpll_0_locked_conduit.export

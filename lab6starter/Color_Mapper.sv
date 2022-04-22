@@ -69,7 +69,9 @@ sprite_y = DrawY - BallY;
 m_stand_addr = sprite_x + sprite_y*16;
 
 
-back_addr = DrawX+DrawY*16;
+back_addr = (DrawX%16)+(DrawY%16)*16;
+
+//640 by 480 
 
 end
 
@@ -85,17 +87,24 @@ end
             Blue = m_stand_RGB[7:0];
         end
 		  
-        else 
+        else if(DrawY>=416)
         begin 
-            Red = 8'h89;//back_RGB[23:16];
-            Green =8'h38; //back_RGB[15:8];
-            Blue = 8'h92;//back_RGB[7:0];
+            Red = back_RGB[23:16];
+            Green = back_RGB[15:8];
+            Blue = back_RGB[7:0];
         end
+		  
+		  else
+		  begin
+	         Red = 8'h5c;
+            Green = 8'h94;
+            Blue = 8'hfc;
+		  end
 	end
 	
 	else
 	begin
-	          Red = 8'h00;
+	         Red = 8'h00;
             Green = 8'h00;
             Blue = 8'h00;
 	end

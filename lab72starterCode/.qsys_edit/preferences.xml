@@ -9,7 +9,7 @@
    <inputclock preferredWidth="184" />
   </columns>
  </systemtable>
- <library expandedCategories="Library,Project/ECE 385 Custom IPs,Project" />
- <window width="1408" height="920" x="8" y="5" />
+ <library expandedCategories="Project/ECE 385 Custom IPs,Project,Library" />
+ <window width="1408" height="920" x="1" y="0" />
  <generation path="_PROJECT_NAME_/" />
 </preferences>

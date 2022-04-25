@@ -14,6 +14,7 @@
 
 
 module  color_mapper ( input        [9:0] BallX, BallY, DrawX, DrawY, Ball_size,
+								input [7:0] keycode,
 							  input Clk_50,blank,pixel_clk,
                        output logic [7:0]  Red, Green, Blue );
     
@@ -66,10 +67,22 @@ begin:sprite_addr_calc
 sprite_x = DrawX - BallX;
 sprite_y = DrawY - BallY;
 
+if(keycode == 8'h07) //right
+begin
 m_stand_addr = sprite_x + sprite_y*16;
+end
 
+else if(keycode == 8'h04)//left
+begin
+m_stand_addr = (15-sprite_x) + sprite_y*16;
+end
 
-back_addr = (DrawX%16)+(DrawY%16)*16;
+else //jump
+begin
+m_stand_addr = sprite_x + sprite_y*16; //replace with jump mario
+end
+
+back_addr = DrawX[3:0]+DrawY[3:0]*16; //(DrawX%16)+(DrawY%16)*16
 
 //640 by 480 
 

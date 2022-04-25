@@ -183,7 +183,7 @@ module  ball ( input Reset, frame_clk,
 							  
 					if((keycode == 8'h1A)&&!upFlag&&downFlag)
 							begin
-								jumpCount <= 6'b111111;
+								jumpCount <= 6'b100000;//changed from 6'b111111
 							 end	  
 
 				end

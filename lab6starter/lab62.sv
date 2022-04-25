@@ -174,7 +174,7 @@ ball ball_mod(.Reset(Reset_h), .frame_clk(VGA_VS),
 
 
 color_mapper color_mod( .BallX(ballxsig),.BallY(ballysig), .DrawX(drawxsig), .DrawY(drawysig),.Ball_size(ballsizesig),
-								.Clk_50(MAX10_CLK1_50),.pixel_clk(VGA_clk),.blank(blank),
+								.Clk_50(MAX10_CLK1_50),.pixel_clk(VGA_clk),.blank(blank),.keycode(keycode),
                        .Red(Red),.Green(Green), .Blue(Blue) 
 
 );			

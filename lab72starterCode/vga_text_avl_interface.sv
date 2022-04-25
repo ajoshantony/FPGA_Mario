@@ -58,7 +58,7 @@ module vga_text_avl_interface (
 	output logic [31:0] AVL_READDATA,		// Avalon-MM Read Data
 	
 	// Exported Conduit (mapped to VGA port - make sure you export in Platform Designer)
-	output logic [3:0]  red, green, blue,	// VGA color channels (mapped to output pins in top-level)
+	output logic [7:0]  red, green, blue,	// VGA color channels (mapped to output pins in top-level)
 	output logic hs, vs						// VGA HS/VS
 );
 

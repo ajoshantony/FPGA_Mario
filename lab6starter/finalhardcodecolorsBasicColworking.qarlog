@@ -1,0 +1,96 @@
+Quartus Prime Archive log --	C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/finalhardcodecolorsBasicColworking.qarlog
+
+Archive:	C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/finalhardcodecolorsBasicColworking.qar
+Date:		Fri Apr 22 16:21:47 2022
+Quartus Prime		18.1.0 Build 625 09/12/2018 SJ Lite Edition
+
+	=========== Files Selected: ===========
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/Color_Mapper.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/HexDriver.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/Mario_standing.txt
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/VGA_controller.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/assignment_defaults.qdf
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/background1.txt
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/backgroundBlock_FIN.txt
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/background_rom.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/ball.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab6.qpf
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab6.qsf
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab6.sdc
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc.qsys
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc.sopcinfo
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/lab62soc.cmp
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/lab62soc.debuginfo
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/lab62soc.qip
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/lab62soc.regmap
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/lab62soc.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_avalon_sc_fifo.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_avalon_st_clock_crosser.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_avalon_st_handshake_clock_crosser.sdc
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_avalon_st_handshake_clock_crosser.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_avalon_st_pipeline_base.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_avalon_st_pipeline_stage.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_default_burst_converter.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_incr_burst_converter.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_merlin_address_alignment.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_merlin_arbitrator.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_merlin_burst_adapter.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_merlin_burst_adapter_13_1.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_merlin_burst_adapter_new.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_merlin_burst_adapter_uncmpr.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_merlin_burst_uncompressor.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_merlin_master_agent.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_merlin_master_translator.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_merlin_slave_agent.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_merlin_slave_translator.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_merlin_width_adapter.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_reset_controller.sdc
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_reset_controller.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_reset_synchronizer.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_std_synchronizer_nocut.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/altera_wrap_burst_converter.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab61soc_nios2_gen2_0_cpu.sdc
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_hex_digits_pio.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_irq_mapper.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_jtag_uart_0.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_key.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_keycode.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_leds_pio.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_mm_interconnect_0.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_mm_interconnect_0_avalon_st_adapter.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_mm_interconnect_0_avalon_st_adapter_005.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_mm_interconnect_0_avalon_st_adapter_005_error_adapter_0.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_mm_interconnect_0_avalon_st_adapter_error_adapter_0.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_mm_interconnect_0_cmd_demux.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_mm_interconnect_0_cmd_mux.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_mm_interconnect_0_router.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_mm_interconnect_0_router_002.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_mm_interconnect_0_router_007.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_mm_interconnect_0_rsp_demux.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_mm_interconnect_0_rsp_mux.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_nios2_gen2_0.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_nios2_gen2_0_cpu.sdc
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_nios2_gen2_0_cpu.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_nios2_gen2_0_cpu_debug_slave_sysclk.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_nios2_gen2_0_cpu_debug_slave_tck.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_nios2_gen2_0_cpu_debug_slave_wrapper.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_nios2_gen2_0_cpu_ociram_default_contents.mif
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_nios2_gen2_0_cpu_rf_ram_a.mif
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_nios2_gen2_0_cpu_rf_ram_b.mif
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_nios2_gen2_0_cpu_test_bench.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_onchip_memory2_0.hex
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_onchip_memory2_0.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_sdram.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_sdram_pll.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_spi_0.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_sysid_qsys_0.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_timer_0.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_usb_gpx.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/lab62soc/synthesis/submodules/lab62soc_usb_rst.v
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/mario_standing_rom.sv
+C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/platform_block_rom.sv
+	======= Total: 85 files to archive =======
+
+	================ Status: ===============
+All files archived successfully.

@@ -1,5 +1,6 @@
 
 
+/*
 module FSM_Mario (   input logic         Clk, 
 									Reset,
 									Run,
@@ -18,6 +19,8 @@ module FSM_Mario (   input logic         Clk,
 
 	enum logic [4:0] {  
 						Jumping,
+						Jumping2,
+						Jumping3,
 						Falling,
 						Falling_right,
 						Falling_left,
@@ -46,125 +49,77 @@ module FSM_Mario (   input logic         Clk,
 		left_accel = 3'b000;
 	
 		// Assign next state
-		unique case (State)
-			Halted : 
-				if (Run) 
-					Next_state = S_18;                      
-			S_18 :
-				Next_state = S_33_1;
-			// Any states involving SRAM require more than one clock cycles.
-			// The exact number will be discussed in lecture.
-			S_33_1 : 
-				Next_state = S_33_2;  //repeat 3 times for memory to be ready
-			S_33_2 : 
-				Next_state = S_33_3;
-			S_33_3 :
-				Next_state = S_35;
-			S_35 : 
-				Next_state = S_32;
-			S_01 : 
-			//ADD
-				Next_state = S_18;
-			S_05 :
-			//AND
-				Next_state = S_18;
-			S_09 :
-			//NOT
-				Next_state = S_18;
-			S_00 : 
-			//BEN
-				if(BEN)
-				Next_state = S_22;
-				else
-				Next_state = S_18;
-			S_22 :
-			//PC <- PC + off9
-				Next_state = S_18;
-			S_12 :
-			//JMP
-				Next_state = S_18;
-			S_04 :
-			//JSR R7 <- PC
-				Next_state = S_21;
-			S_21 :
-			//PC <- PC + off11
-				Next_state = S_18;
-			S_06 :
-			//LDR
-				Next_state = S_25;
-
-			S_25 :
-			//MDR <- M[MAR]
-				Next_state = S_25_2;
-				
-			S_25_2 :
-				Next_state = S_25_3;
-				
-			S_25_3 :
-				Next_state = S_27;
-			S_27 :
-			//DR <- MDR, Set CC
-				Next_state = S_18;
-				
-			S_07 :
-			//STR
-			Next_state = S_23;
+		unique case (State)                
 			
-			S_23 :
-			//MDR <- SR
-			Next_state = S_16;
 			
-			S_16 :
-			//M[MAR] <- MDR
-			Next_state = S_16_2;
+			Jumping :
+			Next_state = Jumping2;
 			
-			S_16_2 :
-			Next_state = S_16_3;
+			Jumping2 :
+			Next_state = Jumping3;
 			
-			S_16_3 :
-			Next_state = S_18;
+			Jumping3 :
+			Next_state = Falling;
+			
+			Falling :
+			if((keycode == 8'h07))
+			Next_state = Falling_right;
+			else if((keycode == 8'h04))
+			Next_state = Falling_left;
+			else if(is_ground)
+			Next_state = Standing;
+			else
+			Next_state = Falling;
+			
+			Falling_right :
+			if(is_ground)
+			Next_state = Standing;ddddddddd
+			else if(!(keycode == 8'h07))
+			Next_state = Falling;
+			else
+			Next_state = Falling_right;
+			
+			Falling_left :
+			if(is_ground)
+			Next_state = Standing;
+			else if(!(keycode == 8'h04))
+			Next_state = Falling;
+			else
+			Next_state = Falling_left;
+			
+			Standing :
+			if(keycode == 8'h26)
+			Next_state = Jumping;
+			if(keycode == 8'h07)
+			Next_state = Walking_right;
+			if(keycode == 8'h04)
+			Next_state = Walking_left;
+			else
+			Next_state = Standing;
+			
+			Walking_left :
+			if(keycode == 8'h26)
+			Next_state = Jumping;
+			if(!(keycode == 8'h04))
+			Next_state = Standing;
+			else
+			Next_state = Walking_left;
+			
+			Walking_right :
+			if(keycode == 8'h26)
+			Next_state = Jumping;
+			if(!(keycode == 8'h07))
+			Next_state = Standing;
+			else
+			Next_state = Walking_right;
+			
+			
 			
 			// You need to finish the rest of states.....
 			
 			// PauseIR1 and PauseIR2 are only for Week 1 such that TAs can see 
 			// the values in IR.
-			PauseIR1 : 
-				if (~Continue) 
-					Next_state = PauseIR1;
-				else 
-					Next_state = PauseIR2;
-			PauseIR2 : 
-				if (Continue) 
-					Next_state = PauseIR2;
-				else 
-					Next_state = S_18;
-			S_32 : 
-				case (Opcode)
-					4'b0001 : 
-						Next_state = S_01;
-					4'b0101 :
-						Next_state = S_05;
-					4'b1001 :
-						Next_state = S_09;
-					4'b0000 :
-						Next_state = S_00;
-					4'b1100 :
-						Next_state = S_12;
-					4'b0100 :
-						Next_state = S_04;
-					4'b0110 :
-						Next_state = S_06;
-					4'b0111 :
-						Next_state = S_07;
-					4'b1101 :
-						Next_state = PauseIR1;
-						
-						
-
-					// You need to finish the rest of opcodes.....
-
-					default : 
-						Next_state = S_18;
+			
 				endcase
 			
 			// You need to finish the rest of states.....
@@ -261,7 +216,7 @@ module FSM_Mario (   input logic         Clk,
 				SR1MUX = 1'b1;
 				ADDR1MUX = 1'b1;
 				ADDR2MUX = 2'b01;
-				*/
+				
 				SR1MUX = 1'b1;
 				ALUK = 2'b11;//pass A
 				GateALU = 1'b1;//open gatealu
@@ -366,3 +321,5 @@ module FSM_Mario (   input logic         Clk,
 
 	
 endmodule
+
+*/

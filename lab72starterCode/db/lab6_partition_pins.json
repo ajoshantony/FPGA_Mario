@@ -292,15 +292,7 @@
 					"strict" : false
 				},
 				{
-					"name" : "VGA_G[1]",
-					"strict" : false
-				},
-				{
 					"name" : "VGA_G[2]",
-					"strict" : false
-				},
-				{
-					"name" : "VGA_G[3]",
 					"strict" : false
 				},
 				{
@@ -313,10 +305,6 @@
 				},
 				{
 					"name" : "VGA_B[2]",
-					"strict" : false
-				},
-				{
-					"name" : "VGA_B[3]",
 					"strict" : false
 				},
 				{
@@ -381,6 +369,10 @@
 				},
 				{
 					"name" : "DRAM_DQ[15]",
+					"strict" : false
+				},
+				{
+					"name" : "ARDUINO_IO[7]",
 					"strict" : false
 				},
 				{

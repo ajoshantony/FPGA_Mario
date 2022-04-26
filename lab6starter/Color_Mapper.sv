@@ -58,6 +58,12 @@ logic [18:0] back_addr;
 logic [23:0] back_RGB;
 platform_block_rom platform_block_mod(.read_address(back_addr),.Clk(Clk_50),.data_Out(back_RGB)
 );
+
+logic [7:0] brick_addr;
+logic [23:0] brick_RGB;
+brick_rom brick_rom_mod(.read_address(brick_addr),.Clk(Clk_50),.data_Out(brick_RGB)
+);
+
 //RGB to ignore : ee35ff
 logic [9:0] sprite_x,sprite_y,spriteB_x,spriteB_y;
 logic [7:0] m_stand_addr;
@@ -84,6 +90,7 @@ end
 
 back_addr = DrawX[3:0]+DrawY[3:0]*16; //(DrawX%16)+(DrawY%16)*16
 
+brick_addr = DrawX[3:0]+DrawY[3:0]*16;
 //640 by 480 
 
 end
@@ -106,6 +113,13 @@ end
             Green = back_RGB[15:8];
             Blue = back_RGB[7:0];
         end
+		  
+		  else if(DrawY>= 368 && DrawY<= 384 && DrawX>=96 && DrawX<=160)
+		  begin
+		      Red = brick_RGB[23:16];
+            Green = brick_RGB[15:8];
+            Blue = brick_RGB[7:0];
+		  end
 		  
 		  else
 		  begin

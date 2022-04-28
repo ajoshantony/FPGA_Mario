@@ -166,9 +166,10 @@ vga_controller vga_mod( .Clk(MAX10_CLK1_50),.Reset(Reset_h),.hs(VGA_HS),.vs(VGA_
 );
 							
 	
-ball ball_mod(.Reset(Reset_h), .frame_clk(VGA_VS),
+ball ball_mod(.Reset(Reset_h), .frame_clk(VGA_VS), .pixel_clk(VGA_clk), .clk_50(MAX10_CLK1_50),
 					.keycode(keycode),
-               .BallX(ballxsig), .BallY(ballysig), .BallS(ballsizesig)
+               .BallX(ballxsig), .BallY(ballysig), .BallS(ballsizesig),
+					.DrawX(drawxsig), .DrawY(drawysig)
 );	
 
 

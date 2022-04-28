@@ -11,31 +11,19 @@
 //    For use with ECE 298 Lab 7                                         --
 //    UIUC ECE Department                                                --
 //-------------------------------------------------------------------------
-module counter (input  logic Clk, Reset, Add_En,
-              output logic [3:0]  count);
 
-    always_ff @ (posedge Clk)
-    begin
-	 	 if (Reset) //notice, this is a sycnrhonous reset, which is recommended on the FPGA
-			  count <= 4'h0;
-		 else if (Add_En)
-		 begin
-			count <= count + 1;
-		 end
-    end
-	
 
-endmodule
-
-module  ball ( input Reset, frame_clk,
+module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 					input [7:0] keycode,
+					input [9:0] DrawX, DrawY,
                output [9:0]  BallX, BallY, BallS );
     
     logic [9:0] Ball_X_Pos, Ball_Right_Motion, Ball_Left_Motion, Ball_Y_Pos, Ball_Up_Motion, Ball_Down_Motion, Ball_Size;
+	 logic [9:0] New_X_Pos, New_Y_Pos;
 	 logic downFlag, upFlag, leftFlag, rightFlag, addTrue, jumpReset;
 	 logic [5:0] jumpCount;
 	 logic [2:0] speed, terminal;
-	 logic [5:0] fallDownSpeed, fallUpSpeed;
+	 logic [5:0] fallDownSpeed, fallUpSpeed, NetRight, NetLeft, NetUp, NetDown;
 	 
     parameter [9:0] Ball_X_Center=0;  // Center position on the X axis
     parameter [9:0] Ball_Y_Center=100;  // Center position on the Y axis
@@ -48,6 +36,11 @@ module  ball ( input Reset, frame_clk,
 
     assign Ball_Size = 16;  // assigns the value 4 as a 10-digit binary number, ie "0000000100"
    
+	collisions mario_collisions (.X_Pos(Ball_X_Pos), .Y_Pos(Ball_Y_Pos), 
+	.DrawX(DrawX), .DrawY(DrawY), .Right_V(NetRight), .Left_V(NetLeft), .Up_V(NetUp), 
+	.Down_V(NetDown), .frame_clk(frame_clk), .pixel_clk(pixel_clk), 
+	.clk_50(clk_50), .X_Out(New_X_Pos),.Y_Out(New_Y_Pos));
+	
 	
     always_ff @ (posedge Reset or posedge frame_clk )
     begin: Move_Ball
@@ -105,6 +98,8 @@ module  ball ( input Reset, frame_clk,
 		  
 		  
 		  //read comments on each line, changed all the conditional logic
+		  
+		  /*
 		  upFlag <= 0;
 		  downFlag <= 0;
 		  leftFlag <= 0;
@@ -133,7 +128,7 @@ module  ball ( input Reset, frame_clk,
 					  Ball_Left_Motion <= 0;
 					  leftFlag <= 1;
 					  end
-					  
+			*/		  
 		  if(jumpCount == 0)
 		  begin
 		  
@@ -145,35 +140,35 @@ module  ball ( input Reset, frame_clk,
 					  Ball_Down_Motion <= terminal;
 					  Ball_Right_Motion <= 0; // No key is pressed, fall down.
 					  Ball_Left_Motion <= 0;
-					if(downFlag)
-					Ball_Down_Motion <= 0;
+					//if(downFlag)
+					//Ball_Down_Motion <= 0;
 				 
-					if((keycode == 8'h04)&&!leftFlag)
+					if((keycode == 8'h04)/*&&!leftFlag*/)
 							begin
 
 								Ball_Left_Motion <= speed;//A
 								Ball_Right_Motion <= 0;
 								Ball_Up_Motion <= 0;
-								if(downFlag)
-								Ball_Down_Motion <= 0;
-								else
+								//if(downFlag)
+								//Ball_Down_Motion <= 0;
+								//else
 								Ball_Down_Motion <= speed;
 							  end
 					        
-					if((keycode == 8'h07)&&!rightFlag)
+					if((keycode == 8'h07)/*&&!rightFlag*/)
 							begin
 								
 							  Ball_Left_Motion <= 0;
 								Ball_Right_Motion <= speed;//D
 								Ball_Up_Motion <= 0;
-								if(downFlag)
-								Ball_Down_Motion <= 0;
-								else
+								//if(downFlag)
+								//Ball_Down_Motion <= 0;
+								//else
 								Ball_Down_Motion <= speed;
 							  end
 
 							  
-					if((keycode == 8'h16)&&!downFlag)
+					if((keycode == 8'h16)/*&&!downFlag*/)
 							begin
 
 							  Ball_Left_Motion <= 0;
@@ -182,7 +177,7 @@ module  ball ( input Reset, frame_clk,
 								Ball_Down_Motion <= speed;//S
 							 end
 							  
-					if((keycode == 8'h1A)&&!upFlag&&downFlag)
+					if((keycode == 8'h1A)/*&&!upFlag&&downFlag*/)
 							begin
 								jumpCount <= 6'b111111;
 							 end	  
@@ -204,7 +199,7 @@ module  ball ( input Reset, frame_clk,
 				Ball_Up_Motion <= fallUpSpeed;
 				Ball_Down_Motion <= fallDownSpeed;
 				jumpCount <= jumpCount - 1;
-				if((keycode == 8'h04)&&!leftFlag)
+				if((keycode == 8'h04)/*&&!leftFlag*/)
 							begin
 
 								Ball_Left_Motion <= speed;//A
@@ -213,7 +208,7 @@ module  ball ( input Reset, frame_clk,
 								Ball_Down_Motion <= fallDownSpeed;
 							  end
 					        
-				else if((keycode == 8'h07)&&!rightFlag)
+				else if((keycode == 8'h07)/*&&!rightFlag*/)
 							begin
 								
 							  Ball_Left_Motion <= 0;
@@ -228,6 +223,7 @@ module  ball ( input Reset, frame_clk,
 				Ball_Right_Motion <= 0;
 				Ball_Left_Motion <= 0;
 				end
+				/*
 				if ( ((Ball_Y_Pos ) >= Ball_Y_Max - 20)||((Ball_Y_Pos>= 368-20) &&(Ball_Y_Pos<=368)&& (Ball_X_Pos>=96-10) && (Ball_X_Pos<=160)) )  // Mario is at bottom of screen, on the floor
 					  begin
 					  Ball_Down_Motion <= 0;// Zero out the motion (maybe need to push back Mario as well if he clips through)
@@ -253,14 +249,30 @@ module  ball ( input Reset, frame_clk,
 					  end
 				
 				if(downFlag)
+				begin
 				Ball_Down_Motion <= 0;
+				//jumpCount <= 0;
+				end
 				if(upFlag)
+				begin
 				Ball_Up_Motion <= 0;
+				fallUpSpeed <= 0;
+				jumpCount <= 0;
+				end
+				*/
 				end
 				 
-				 Ball_Y_Pos <= (Ball_Y_Pos + Ball_Down_Motion - Ball_Up_Motion);  // Update ball position
-				 Ball_X_Pos <= (Ball_X_Pos + Ball_Right_Motion - Ball_Left_Motion);
-		  
+				 
+				 //Ball_Y_Pos <= (Ball_Y_Pos + Ball_Down_Motion - Ball_Up_Motion);  // Update ball position
+				 //Ball_X_Pos <= (Ball_X_Pos + Ball_Right_Motion - Ball_Left_Motion);
+				 
+				 NetRight <= Ball_Right_Motion;
+				 NetLeft <= Ball_Left_Motion;
+				 NetUp <= Ball_Up_Motion + fallUpSpeed;
+				 NetDown <= Ball_Down_Motion + fallDownSpeed;
+				 
+				 Ball_X_Pos <= New_X_Pos;
+				 Ball_Y_Pos <= New_Y_Pos;
 		  
 		  
 			

@@ -1,5 +1,5 @@
 Archive Project report for lab6
-Fri Apr 22 16:21:48 2022
+Wed Apr 27 18:18:55 2022
 Quartus Prime Version 18.1.0 Build 625 09/12/2018 SJ Lite Edition
 
 
@@ -35,7 +35,7 @@ refer to the applicable agreement for further details.
 +----------------------------------------------------------------+
 ; Archive Project Summary                                        ;
 +------------------------+---------------------------------------+
-; Archive Project Status ; Successful - Fri Apr 22 16:21:48 2022 ;
+; Archive Project Status ; Successful - Wed Apr 27 18:18:55 2022 ;
 ; Revision Name          ; lab6                                  ;
 ; Top-level Entity Name  ; lab62                                 ;
 ; Family                 ; MAX 10                                ;
@@ -50,17 +50,17 @@ Info: File Set 'Source control' contains:
     Info: Automatically detected source files
 Warning: Hierarchical Platform Designer systems and custom IP components(_hw.tcl and associated files) are not archived by the Quartus Archiver
 Info: Archive will store files relative to the closest common parent directory
-Info (13213): Using common directory C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/
+Info (13213): Using common directory C:/Users/thega/Documents/School/ECE385-Final-Project/lab6starter/
 Info: ----------------------------------------------------------
 Info: ----------------------------------------------------------
-Info: Generated archive 'C:/Users/Ajosh/Desktop/ECE385-Final-Project/lab6starter/finalhardcodecolorsBasicColworking.qar'
+Info: Generated archive 'C:/Users/thega/Documents/School/ECE385-Final-Project/lab6starter/finalprojectdraft1.qar'
 Info: ----------------------------------------------------------
 Info: ----------------------------------------------------------
 Info: Generated report 'lab6.archive.rpt'
 Info (23030): Evaluation of Tcl script c:/intelfpga_lite/18.1/quartus/common/tcl/apps/qpm/qar.tcl was successful
 Info: Quartus Prime Shell was successful. 0 errors, 1 warning
     Info: Peak virtual memory: 4832 megabytes
-    Info: Processing ended: Fri Apr 22 16:21:48 2022
+    Info: Processing ended: Wed Apr 27 18:18:55 2022
     Info: Elapsed time: 00:00:02
     Info: Total CPU time (on all processors): 00:00:02
 
@@ -75,6 +75,7 @@ Info: Quartus Prime Shell was successful. 0 errors, 1 warning
 ; background_rom.sv                                                                                 ;
 ; backgroundBlock_FIN.txt                                                                           ;
 ; ball.sv                                                                                           ;
+; brick.txt                                                                                         ;
 ; Color_Mapper.sv                                                                                   ;
 ; HexDriver.sv                                                                                      ;
 ; lab6.qpf                                                                                          ;

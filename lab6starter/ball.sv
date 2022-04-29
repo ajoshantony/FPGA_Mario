@@ -27,6 +27,7 @@ module counter (input  logic Clk, Reset, Add_En,
 
 endmodule
 
+//clock math for regs that get the highest collosions  draw platforms first
 module  ball ( input Reset, frame_clk,
 					input [7:0] keycode,
                output [9:0]  BallX, BallY, BallS );
@@ -34,10 +35,10 @@ module  ball ( input Reset, frame_clk,
     logic [9:0] Ball_X_Pos, Ball_Right_Motion, Ball_Left_Motion, Ball_Y_Pos, Ball_Up_Motion, Ball_Down_Motion, Ball_Size;
 	 logic downFlag, upFlag, leftFlag, rightFlag, addTrue, jumpReset;
 	 logic [5:0] jumpCount;
-	 logic [1:0] speed;
+	 logic [2:0] speed, terminal;
 	 logic [5:0] fallDownSpeed, fallUpSpeed;
 	 
-    parameter [9:0] Ball_X_Center=30;  // Center position on the X axis
+    parameter [9:0] Ball_X_Center=0;  // Center position on the X axis
     parameter [9:0] Ball_Y_Center=100;  // Center position on the Y axis
     parameter [9:0] Ball_X_Min=0;       // Leftmost point on the X axis
     parameter [9:0] Ball_X_Max=639;     // Rightmost point on the X axis
@@ -61,6 +62,7 @@ module  ball ( input Reset, frame_clk,
 				Ball_X_Pos <= Ball_X_Center;
 				jumpCount <= 0;
 				speed <= 2;
+				terminal <= 3;
         end
            
         else 
@@ -109,13 +111,13 @@ module  ball ( input Reset, frame_clk,
 		  leftFlag <= 0;
 		  rightFlag <= 0;
 		  
-		  if ( (Ball_Y_Pos ) >= Ball_Y_Max - 20 )  // Mario is at bottom of screen, on the floor
+		  if ( ((Ball_Y_Pos ) >= Ball_Y_Max - 20)||((Ball_Y_Pos>= 368-20) &&(Ball_Y_Pos<=368)&& (Ball_X_Pos>=96-10) && (Ball_X_Pos<=160)) )  // Mario is at bottom of screen, on the floor
 					  begin
 					  Ball_Down_Motion <= 0;// Zero out the motion (maybe need to push back Mario as well if he clips through)
 					  downFlag <= 1;
 					  end
 					  
-				 if ( (Ball_Y_Pos) <= Ball_Y_Min+1 )  // Mario has hit the top of the screen. Stop motion.
+				 if ( ((Ball_Y_Pos) <= Ball_Y_Min+1 )||((Ball_Y_Pos<= 384+8) && (Ball_Y_Pos >= 384)&&(Ball_X_Pos>=96-10) && (Ball_X_Pos<=160)))  // Mario has hit the top of the screen. Stop motion.
 					  begin
 					  Ball_Up_Motion <= 0;
 					  upFlag <= 1;
@@ -127,7 +129,7 @@ module  ball ( input Reset, frame_clk,
 					  rightFlag <= 1;
 					  end  
 					  
-				 if ( (Ball_X_Pos) <= Ball_X_Min + 15)  // Mario is on left side of screen. Stop
+				 if ( (Ball_X_Pos) <= Ball_X_Min + 4)  // Mario is on left side of screen. Stop
 					  begin
 					  Ball_Left_Motion <= 0;
 					  leftFlag <= 1;
@@ -141,7 +143,7 @@ module  ball ( input Reset, frame_clk,
 				  
 				 begin
 					  Ball_Up_Motion <= 0;
-					  Ball_Down_Motion <= speed;
+					  Ball_Down_Motion <= terminal;
 					  Ball_Right_Motion <= 0; // No key is pressed, fall down.
 					  Ball_Left_Motion <= 0;
 					if(downFlag)
@@ -192,8 +194,8 @@ module  ball ( input Reset, frame_clk,
 				begin
 				if(jumpCount == 6'b111111)
 				begin
-				fallUpSpeed <= 8;
-				fallDownSpeed <= 3;
+				fallUpSpeed <= 9;
+				fallDownSpeed <= 4;
 				end
 				if(jumpCount % 6 == 0)
 				begin
@@ -220,16 +222,41 @@ module  ball ( input Reset, frame_clk,
 								Ball_Up_Motion <= fallUpSpeed;
 								Ball_Down_Motion <= fallDownSpeed;
 							  end
+
+				
 				else
 				begin
 				Ball_Right_Motion <= 0;
 				Ball_Left_Motion <= 0;
 				end
-				if ( (Ball_Y_Pos - Ball_Size) <= Ball_Y_Min + 17 )  // Mario has hit the top of the screen. Stop motion.
+				if ( ((Ball_Y_Pos ) >= Ball_Y_Max - 20)||((Ball_Y_Pos>= 368-20) &&(Ball_Y_Pos<=368)&& (Ball_X_Pos>=96-10) && (Ball_X_Pos<=160)) )  // Mario is at bottom of screen, on the floor
+					  begin
+					  Ball_Down_Motion <= 0;// Zero out the motion (maybe need to push back Mario as well if he clips through)
+					  downFlag <= 1;
+					  end
+					  
+				 if ( ((Ball_Y_Pos) <= Ball_Y_Min+1 )||((Ball_Y_Pos<= 384+8) && (Ball_Y_Pos >= 384)&&(Ball_X_Pos>=96-10) && (Ball_X_Pos<=160)))  // Mario has hit the top of the screen. Stop motion.
 					  begin
 					  Ball_Up_Motion <= 0;
 					  upFlag <= 1;
 					  end
+					  
+				 if ( (Ball_X_Pos) >= Ball_X_Max - 17)  //Mario is on right side of screen, stop motion
+					  begin
+					  Ball_Right_Motion <= 0;  
+					  rightFlag <= 1;
+					  end  
+					  
+				 if ( (Ball_X_Pos) <= Ball_X_Min + 4)  // Mario is on left side of screen. Stop
+					  begin
+					  Ball_Left_Motion <= 0;
+					  leftFlag <= 1;
+					  end
+
+				if(downFlag)
+				Ball_Down_Motion <= 0;
+				if(upFlag)
+				Ball_Up_Motion <= 0;
 				end
 				 
 				 Ball_Y_Pos <= (Ball_Y_Pos + Ball_Down_Motion - Ball_Up_Motion);  // Update ball position

@@ -11,14 +11,31 @@
 //    For use with ECE 385 Lab 7                                         --
 //    University of Illinois ECE Department                              --
 //-------------------------------------------------------------------------
+module counter (input  logic Clk, Add_En,
+              output logic [5:0]  count);
 
+    always_ff @ (posedge Clk)
+    begin
+	 	 
+		
+			count <= count + 1;
 
-module  color_mapper ( input        [9:0] BallX, BallY, DrawX, DrawY, Ball_size,
+    end
+	
+
+endmodule
+
+module  color_mapper ( input        [9:0] BallX, BallY, DrawX, DrawY, Ball_size, score,
 								input [7:0] keycode,
-							  input Clk_50,blank,pixel_clk,
+							  input Clk_50,blank,pixel_clk, frame_clk,
                        output logic [7:0]  Red, Green, Blue );
     
     logic ball_on;
+	 logic [5:0] questioncount;
+	 
+	 
+	 
+	 
 	 
  /* Old Ball: Generated square box by checking if the current pixel is within a square of length
     2*Ball_Size, centered at (BallX, BallY).  Note that this requires unsigned comparisons.
@@ -53,25 +70,52 @@ module  color_mapper ( input        [9:0] BallX, BallY, DrawX, DrawY, Ball_size,
  mario_standing_rom mario_standing_ROM_0(.read_address(m_stand_addr), .Clk(Clk_50),.data_Out(m_stand_RGB)
 );
 
+counter questioncounter (.Clk(frame_clk), .count(questioncount));
 
-logic [18:0] back_addr;
-logic [23:0] back_RGB;
-platform_block_rom platform_block_mod(.read_address(back_addr),.Clk(Clk_50),.data_Out(back_RGB)
-);
-
-logic [7:0] brick_addr;
-logic [23:0] brick_RGB;
-brick_rom brick_rom_mod(.read_address(brick_addr),.Clk(Clk_50),.data_Out(brick_RGB)
-);
 
 //RGB to ignore : ee35ff
-logic [9:0] sprite_x,sprite_y,spriteB_x,spriteB_y;
+logic [9:0] sprite_x,sprite_y;
 logic [7:0] m_stand_addr;
 logic [23:0] m_stand_RGB;
+logic [12:0] back_ADDR;
+logic [4:0] sprite_Index;
+logic [23:0] back_RGB;
+logic [12:0] sprite_ADDR;
+logic [12:0] scroll_shift; //make register
+
+world_rom world_ROM_Color_Mapper (.read_address(back_ADDR), .Clk(Clk_50), .data_Out(sprite_Index));
+	 
+palette_16_rom palette_16_rom_mod (.read_address(sprite_ADDR), .Clk(Clk_50), .data_Out(back_RGB));
+
 always_comb
 begin:sprite_addr_calc
 sprite_x = DrawX - BallX;
 sprite_y = DrawY - BallY;
+
+//if(BallX > 240)
+
+//scroll_shift = BallX + scroll_shift;
+//back_ADDR = (DrawX[9:4]+BallX/10)%40+ DrawY[9:4]*40;
+back_ADDR = (DrawX[9:4])+ DrawY[9:4]*40;
+
+
+	if((questioncount >= 0)&&(questioncount < 21)&&(sprite_Index == 6))
+	begin
+	sprite_ADDR = (256*6 + DrawX[3:0]+DrawY[3:0]*16)-1;
+	end
+	else if((questioncount >=21)&&(questioncount < 42)&&(sprite_Index == 6))
+	begin
+	sprite_ADDR = (256*8 + DrawX[3:0]+DrawY[3:0]*16)-1;
+	end
+	else if((questioncount >=42)&&(sprite_Index == 6))
+	begin 
+	sprite_ADDR = (256*10 + DrawX[3:0]+DrawY[3:0]*16)-1;
+	end
+else
+begin 
+sprite_ADDR = (256*sprite_Index + DrawX[3:0]+DrawY[3:0]*16)-1;
+end
+
 
 if(keycode == 8'h07) //right
 begin
@@ -88,12 +132,13 @@ begin
 m_stand_addr = sprite_x + sprite_y*16; //replace with jump mario
 end
 
-back_addr = DrawX[3:0]+DrawY[3:0]*16; //(DrawX%16)+(DrawY%16)*16
 
-brick_addr = DrawX[3:0]+DrawY[3:0]*16;
 //640 by 480 
 
 end
+
+
+
 
 
     always_ff @ (posedge pixel_clk)
@@ -102,38 +147,24 @@ end
 	begin
         if ((ball_on == 1'b1) && (m_stand_RGB != 24'hee35ff) ) 
         begin 
-            Red = m_stand_RGB[23:16];
-            Green = m_stand_RGB[15:8];
-            Blue = m_stand_RGB[7:0];
+            Red <= m_stand_RGB[23:16];
+            Green <= m_stand_RGB[15:8];
+            Blue <= m_stand_RGB[7:0];
         end
-		  
-        else if(DrawY>=416)
-        begin 
-            Red = back_RGB[23:16];
-            Green = back_RGB[15:8];
-            Blue = back_RGB[7:0];
-        end
-		  
-		  else if(DrawY>= 368 && DrawY<= 384 && DrawX>=96 && DrawX<=160)
-		  begin
-		      Red = brick_RGB[23:16];
-            Green = brick_RGB[15:8];
-            Blue = brick_RGB[7:0];
-		  end
-		  
 		  else
 		  begin
-	         Red = 8'h5c;
-            Green = 8'h94;
-            Blue = 8'hfc;
+				Red <= back_RGB[23:16];
+            Green <= back_RGB[15:8];
+            Blue <= back_RGB[7:0];
 		  end
+        
 	end
 	
 	else
 	begin
-	         Red = 8'h00;
-            Green = 8'h00;
-            Blue = 8'h00;
+	         Red <= 8'h00;
+            Green <= 8'h00;
+            Blue <= 8'h00;
 	end
 		  
 		  

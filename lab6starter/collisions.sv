@@ -1,13 +1,5 @@
-module  world_ROM
-(
 
-		input [10:0]  read_address,
-		input  Clk,
 
-		output logic [4:0] data_Out
-);
-
-endmodule
 
 module collisions (
 	input [9:0] X_Pos, Y_Pos, DrawX, DrawY, //input positions
@@ -20,7 +12,7 @@ module collisions (
 
 );
 
-world_ROM world_ROM_collisions (.read_address(cell_ADDR), .Clk(clk_50), .data_Out(sprite_ADDR));
+world_rom world_ROM_collisions (.read_address(cell_ADDR), .Clk(clk_50), .data_Out(sprite_ADDR));
 
 //The location of the nearest colliding pixel in each direction
 logic [9:0] collision_down, collision_up, collision_right, collision_left;
@@ -50,6 +42,12 @@ if((DrawX==0)&&(DrawY==0)) //initial conditions/update outputs. Happens every fr
 									//but no difference as far as I could tell.
 											
 	begin
+	
+	Net_Right_V <= 0;
+	Net_Left_V <= 0;
+	Net_Up_V <= 0;
+	Net_Down_V <= 0;
+
 
 /*--------------------------------------
 Set Net velocities because no 2's comp
@@ -77,7 +75,8 @@ Set Net velocities because no 2's comp
 		Net_Down_V <= Down_V - Up_V;
 		Net_Up_V <= 0;
 		end
-
+		
+		Net_Right_V <= 1;
 
 /*--------------------------------------
 Update positions based off collisions
@@ -87,7 +86,7 @@ Update positions based off collisions
 		if(X_Pos + Net_Right_V + Right_Offset > collision_right)
 			X_Out <= collision_right - 1 -Right_Offset; //maybe remove offset
 		else
-			X_Out <= X_Out + Net_Right_V;
+			X_Out <= X_Pos + Net_Right_V;
 		end
 
 	else
@@ -95,7 +94,7 @@ Update positions based off collisions
 		if(X_Pos - Net_Left_V + Left_Offset < collision_left)
 			X_Out <= collision_left + 1 + Left_Offset; //maybe remove offset
 		else
-			X_Out <= X_Out - Net_Left_V;
+			X_Out <= X_Pos - Net_Left_V;
 		end
 
 	if(Net_Up_V > 0)
@@ -103,7 +102,7 @@ Update positions based off collisions
 		if(Y_Pos - Net_Up_V + Up_Offset < collision_up) //possible bug here is getting stuck on ceilings in a jump until timer runs out. Solve by adding a zero output for up Veclocity if this is the case.
 			Y_Out <= collision_up + 1 + Up_Offset; //maybe remove offset
 		else
-			Y_Out <= Y_Out - Net_Up_V;
+			Y_Out <= Y_Pos - Net_Up_V;
 		end
 
 	else
@@ -111,7 +110,7 @@ Update positions based off collisions
 		if(Y_Pos + Net_Down_V + Down_Offset > collision_down)
 			Y_Out <= collision_down - 1 - Down_Offset; //maybe remove offset
 		else
-			Y_Out <= Y_Out + Net_Down_V;
+			Y_Out <= Y_Pos + Net_Down_V;
 		end
 
 
@@ -135,12 +134,12 @@ end //end of the drawX/drawY If statement block
 /*--------------------------------------
 Determine closest collisions at each pixel
 ----------------------------------------*/
-if(pixel_clk)
+else 
 	begin
 	cell_ADDR = DrawX[9:4] + DrawY[9:4]*40; //when we do scrolling this will have an logic x offset
 
 
-	if(sprite_ADDR % 2 == 0) //even index has collision
+	if(sprite_ADDR[0] == 0) //even index has collision
 		begin
 
 
@@ -161,16 +160,21 @@ if(pixel_clk)
 			end
 
 		end
+		
 
 	end
+	
+	/*
 else
 	begin
+	
 	collision_right <= collision_right;
 	collision_up <= collision_up;
 	collision_down <= collision_down;
 	collision_left <= collision_left;
+	
 	end
-
+	*/
 
 
 //have an always_ff @ (posedge frame_clk or posedge VGA_Clk)  <--- Nevermind to this

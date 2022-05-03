@@ -12,10 +12,13 @@
 //    UIUC ECE Department                                                --
 //-------------------------------------------------------------------------
 
+	
+
+
 
 module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 					input [7:0] keycode,
-					input [9:0] DrawX, DrawY,
+					input [9:0] DrawX, DrawY, score,
                output [9:0]  BallX, BallY, BallS );
     
     logic [9:0] Ball_X_Pos, Ball_Right_Motion, Ball_Left_Motion, Ball_Y_Pos, Ball_Up_Motion, Ball_Down_Motion, Ball_Size;
@@ -25,8 +28,8 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 	 logic [2:0] speed, terminal;
 	 logic [5:0] fallDownSpeed, fallUpSpeed, NetRight, NetLeft, NetUp, NetDown;
 	 
-    parameter [9:0] Ball_X_Center=0;  // Center position on the X axis
-    parameter [9:0] Ball_Y_Center=100;  // Center position on the Y axis
+    parameter [9:0] Ball_X_Center=50;  // Center position on the X axis
+    parameter [9:0] Ball_Y_Center=50;  // Center position on the Y axis
     parameter [9:0] Ball_X_Min=0;       // Leftmost point on the X axis
     parameter [9:0] Ball_X_Max=639;     // Rightmost point on the X axis
     parameter [9:0] Ball_Y_Min=0;       // Topmost point on the Y axis
@@ -40,6 +43,7 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 	.DrawX(DrawX), .DrawY(DrawY), .Right_V(NetRight), .Left_V(NetLeft), .Up_V(NetUp), 
 	.Down_V(NetDown), .frame_clk(frame_clk), .pixel_clk(pixel_clk), 
 	.clk_50(clk_50), .X_Out(New_X_Pos),.Y_Out(New_Y_Pos));
+	
 	
 	
     always_ff @ (posedge Reset or posedge frame_clk )
@@ -270,13 +274,23 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 				 NetLeft <= Ball_Left_Motion;
 				 NetUp <= Ball_Up_Motion + fallUpSpeed;
 				 NetDown <= Ball_Down_Motion + fallDownSpeed;
+				 NetDown <= 1;
 				 
-				 Ball_X_Pos <= New_X_Pos;
-				 Ball_Y_Pos <= New_Y_Pos;
-		  
+				 //Ball_X_Pos <= New_X_Pos;
+				 //Ball_Y_Pos <= New_Y_Pos;
+				 
+		
+				Ball_X_Pos <= New_X_Pos;
+				Ball_Y_Pos <= New_Y_Pos;
+				if(Ball_Y_Pos > 480)
+				begin
+				Ball_Y_Pos <= 100;
+				Ball_X_Pos <= 100;
+				end
 		  
 			
 		end  
+		
     end
        
     assign BallX = Ball_X_Pos;

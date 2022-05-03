@@ -72,6 +72,7 @@ logic Reset_h, vssig, blank, sync, VGA_Clk;
 	logic [9:0] drawxsig, drawysig, ballxsig, ballysig, ballsizesig;
 	logic [7:0] Red, Blue, Green;
 	logic [7:0] keycode;
+	logic [9:0] score;
 
 //=======================================================
 //  Structural coding
@@ -169,14 +170,14 @@ vga_controller vga_mod( .Clk(MAX10_CLK1_50),.Reset(Reset_h),.hs(VGA_HS),.vs(VGA_
 ball ball_mod(.Reset(Reset_h), .frame_clk(VGA_VS), .pixel_clk(VGA_clk), .clk_50(MAX10_CLK1_50),
 					.keycode(keycode),
                .BallX(ballxsig), .BallY(ballysig), .BallS(ballsizesig),
-					.DrawX(drawxsig), .DrawY(drawysig)
+					.DrawX(drawxsig), .DrawY(drawysig), .score(score)
 );	
 
 
 
 color_mapper color_mod( .BallX(ballxsig),.BallY(ballysig), .DrawX(drawxsig), .DrawY(drawysig),.Ball_size(ballsizesig),
 								.Clk_50(MAX10_CLK1_50),.pixel_clk(VGA_clk),.blank(blank),
-                       .Red(Red),.Green(Green), .keycode(keycode), .Blue(Blue) 
+                       .Red(Red),.Green(Green), .keycode(keycode), .Blue(Blue), .score(score), .frame_clk(VGA_VS)
 
 );			
 								

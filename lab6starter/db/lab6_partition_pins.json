@@ -20,14 +20,6 @@
 					"strict" : false
 				},
 				{
-					"name" : "LEDR[4]",
-					"strict" : false
-				},
-				{
-					"name" : "LEDR[5]",
-					"strict" : false
-				},
-				{
 					"name" : "LEDR[6]",
 					"strict" : false
 				},
@@ -100,18 +92,6 @@
 					"strict" : false
 				},
 				{
-					"name" : "HEX2[1]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX2[2]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX2[6]",
-					"strict" : false
-				},
-				{
 					"name" : "HEX3[0]",
 					"strict" : false
 				},
@@ -165,18 +145,6 @@
 				},
 				{
 					"name" : "HEX4[6]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX5[1]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX5[2]",
-					"strict" : false
-				},
-				{
-					"name" : "HEX5[6]",
 					"strict" : false
 				},
 				{
@@ -412,11 +380,11 @@
 					"strict" : false
 				},
 				{
-					"name" : "MAX10_CLK1_50",
+					"name" : "KEY[0]",
 					"strict" : false
 				},
 				{
-					"name" : "KEY[0]",
+					"name" : "MAX10_CLK1_50",
 					"strict" : false
 				},
 				{

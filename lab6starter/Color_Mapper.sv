@@ -96,24 +96,24 @@ sprite_y = DrawY - BallY;
 
 //scroll_shift = BallX + scroll_shift;
 //back_ADDR = (DrawX[9:4]+BallX/10)%40+ DrawY[9:4]*40;
-back_ADDR = (DrawX[9:4])+ DrawY[9:4]*40;
+back_ADDR = (DrawX[9:4] + BallX/10)%40+ DrawY[9:4]*40;
 
 
 	if((questioncount >= 0)&&(questioncount < 21)&&(sprite_Index == 6))
 	begin
-	sprite_ADDR = (256*6 + DrawX[3:0]+DrawY[3:0]*16)-1;
+	sprite_ADDR = (256*6 + DrawX[3:0]+DrawY[3:0]*16);
 	end
 	else if((questioncount >=21)&&(questioncount < 42)&&(sprite_Index == 6))
 	begin
-	sprite_ADDR = (256*8 + DrawX[3:0]+DrawY[3:0]*16)-1;
+	sprite_ADDR = (256*8 + DrawX[3:0]+DrawY[3:0]*16);
 	end
 	else if((questioncount >=42)&&(sprite_Index == 6))
 	begin 
-	sprite_ADDR = (256*10 + DrawX[3:0]+DrawY[3:0]*16)-1;
+	sprite_ADDR = (256*10 + DrawX[3:0]+DrawY[3:0]*16);
 	end
 else
 begin 
-sprite_ADDR = (256*sprite_Index + DrawX[3:0]+DrawY[3:0]*16)-1;
+sprite_ADDR = (256*sprite_Index + DrawX[3:0]+DrawY[3:0]*16);
 end
 
 

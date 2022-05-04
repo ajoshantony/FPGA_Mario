@@ -73,6 +73,7 @@ logic Reset_h, vssig, blank, sync, VGA_Clk;
 	logic [7:0] Red, Blue, Green;
 	logic [7:0] keycode;
 	logic [9:0] score;
+	logic lFlag, rFlag, uFlag, dFlag, sig1, sig2, sig3, sig4;
 
 //=======================================================
 //  Structural coding
@@ -121,6 +122,16 @@ logic Reset_h, vssig, blank, sync, VGA_Clk;
 	assign VGA_B = Blue[7:4];
 	assign VGA_G = Green[7:4];
 	
+	//Assign LEDs for debugging
+	assign LEDR[0] = rFlag;
+	assign LEDR[1] = lFlag;
+	assign LEDR[2] = dFlag;
+	assign LEDR[3] = uFlag;
+	assign LEDR[9] = sig1;
+	assign LEDR[8] = sig2;
+	assign LEDR[7] = sig3;
+	assign LEDR[6] = sig4;
+	
 	
 	lab62soc u0 (
 		.clk_clk                           (MAX10_CLK1_50),  //clk.clk
@@ -155,7 +166,7 @@ logic Reset_h, vssig, blank, sync, VGA_Clk;
 		
 		//LEDs and HEX
 		.hex_digits_export({hex_num_4, hex_num_3, hex_num_1, hex_num_0}),
-		.leds_export({hundreds, signs, LEDR}),
+		//.leds_export({hundreds, signs, LEDR}),
 		.keycode_export(keycode)
 		
 	 );
@@ -170,7 +181,9 @@ vga_controller vga_mod( .Clk(MAX10_CLK1_50),.Reset(Reset_h),.hs(VGA_HS),.vs(VGA_
 ball ball_mod(.Reset(Reset_h), .frame_clk(VGA_VS), .pixel_clk(VGA_clk), .clk_50(MAX10_CLK1_50),
 					.keycode(keycode),
                .BallX(ballxsig), .BallY(ballysig), .BallS(ballsizesig),
-					.DrawX(drawxsig), .DrawY(drawysig), .score(score)
+					.DrawX(drawxsig), .DrawY(drawysig), .score(score), .lFlag(lFlag),
+					.rFlag(rFlag), .uFlag(uFlag), .dFlag(dFlag),
+					.sig1(sig1), .sig2(sig2), .sig3(sig3), .sig4(sig4)
 );	
 
 

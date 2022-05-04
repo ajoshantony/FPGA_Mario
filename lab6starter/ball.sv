@@ -19,7 +19,9 @@
 module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 					input [7:0] keycode,
 					input [9:0] DrawX, DrawY, score,
-               output [9:0]  BallX, BallY, BallS );
+               output [9:0]  BallX, BallY, BallS,
+					output lFlag, rFlag, uFlag, dFlag,
+					output sig1, sig2, sig3, sig4);
     
     logic [9:0] Ball_X_Pos, Ball_Right_Motion, Ball_Left_Motion, Ball_Y_Pos, Ball_Up_Motion, Ball_Down_Motion, Ball_Size;
 	 logic [9:0] New_X_Pos, New_Y_Pos;
@@ -27,8 +29,10 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 	 logic [5:0] jumpCount;
 	 logic [2:0] speed, terminal;
 	 logic [5:0] fallDownSpeed, fallUpSpeed, NetRight, NetLeft, NetUp, NetDown;
+	 logic [5:0] finUp, finDown, finRight, finLeft;
+	 logic [9:0] collision_down, collision_up, collision_right, collision_left;
 	 
-    parameter [9:0] Ball_X_Center=50;  // Center position on the X axis
+    parameter [9:0] Ball_X_Center=464;  // Center position on the X axis
     parameter [9:0] Ball_Y_Center=50;  // Center position on the Y axis
     parameter [9:0] Ball_X_Min=0;       // Leftmost point on the X axis
     parameter [9:0] Ball_X_Max=639;     // Rightmost point on the X axis
@@ -42,7 +46,10 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 	collisions mario_collisions (.X_Pos(Ball_X_Pos), .Y_Pos(Ball_Y_Pos), 
 	.DrawX(DrawX), .DrawY(DrawY), .Right_V(NetRight), .Left_V(NetLeft), .Up_V(NetUp), 
 	.Down_V(NetDown), .frame_clk(frame_clk), .pixel_clk(pixel_clk), 
-	.clk_50(clk_50), .X_Out(New_X_Pos),.Y_Out(New_Y_Pos));
+	.clk_50(clk_50), .X_Out(New_X_Pos),.Y_Out(New_Y_Pos), .upFlag(upFlag), 
+	.downFlag(downFlag), .rightFlag(rightFlag), .leftFlag(leftFlag),
+	.collision_down(collision_down), .collision_up(collision_up), 
+	.collision_left(collision_left), .collision_right(collision_right));
 	
 	
 	
@@ -59,6 +66,10 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 				jumpCount <= 0;
 				speed <= 2;
 				terminal <= 3;
+				sig1 <= 0;
+				sig2 <= 0;
+				sig3 <= 0;
+				sig4 <= 0;
         end
            
         else 
@@ -143,7 +154,7 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 					  Ball_Up_Motion <= 0;
 					  Ball_Down_Motion <= terminal;
 					  Ball_Right_Motion <= 0; // No key is pressed, fall down.
-					  Ball_Left_Motion <= 0;
+					 Ball_Left_Motion <= 0;
 					//if(downFlag)
 					//Ball_Down_Motion <= 0;
 				 
@@ -151,34 +162,34 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 							begin
 
 								Ball_Left_Motion <= speed;//A
-								Ball_Right_Motion <= 0;
-								Ball_Up_Motion <= 0;
+								//Ball_Right_Motion <= 0;
+								//Ball_Up_Motion <= 0;
 								//if(downFlag)
 								//Ball_Down_Motion <= 0;
 								//else
-								Ball_Down_Motion <= speed;
+								//Ball_Down_Motion <= speed;
 							  end
 					        
 					if((keycode == 8'h07)/*&&!rightFlag*/)
 							begin
 								
-							  Ball_Left_Motion <= 0;
+							  //Ball_Left_Motion <= 0;
 								Ball_Right_Motion <= speed;//D
-								Ball_Up_Motion <= 0;
+								//Ball_Up_Motion <= 0;
 								//if(downFlag)
 								//Ball_Down_Motion <= 0;
 								//else
-								Ball_Down_Motion <= speed;
+								//Ball_Down_Motion <= speed;
 							  end
 
 							  
 					if((keycode == 8'h16)/*&&!downFlag*/)
 							begin
 
-							  Ball_Left_Motion <= 0;
-								Ball_Right_Motion <= 0;
-								Ball_Up_Motion <= 0;
-								Ball_Down_Motion <= speed;//S
+							  //Ball_Left_Motion <= 0;
+								//Ball_Right_Motion <= 0;
+								//Ball_Up_Motion <= 0;
+								Ball_Down_Motion <= terminal;//S
 							 end
 							  
 					if((keycode == 8'h1A)/*&&!upFlag&&downFlag*/)
@@ -272,20 +283,90 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 				 
 				 NetRight <= Ball_Right_Motion;
 				 NetLeft <= Ball_Left_Motion;
-				 NetUp <= Ball_Up_Motion + fallUpSpeed;
-				 NetDown <= Ball_Down_Motion + fallDownSpeed;
-				 NetDown <= 1;
+				 NetUp <= Ball_Up_Motion; //+ fallUpSpeed;
+				 NetDown <= Ball_Down_Motion; //+ fallDownSpeed;
+				 
 				 
 				 //Ball_X_Pos <= New_X_Pos;
 				 //Ball_Y_Pos <= New_Y_Pos;
 				 
-		
-				Ball_X_Pos <= New_X_Pos;
-				Ball_Y_Pos <= New_Y_Pos;
+				lFlag <= leftFlag;
+				rFlag <= rightFlag;
+				uFlag <= upFlag;
+				dFlag <= downFlag;
+				
+			
+		if(rightFlag)
+		NetRight <= 0;
+		if(leftFlag)
+		NetLeft <= 0;
+		if(downFlag)
+		NetDown <= 0;
+		if(upFlag)
+		NetUp <= 0;
+			
+			
+		if(NetRight > NetLeft) 
+		begin
+		finRight <= NetRight - NetLeft;
+		finLeft <= 0;
+		if(!rightFlag)
+		begin
+				Ball_X_Pos <= Ball_X_Pos + finRight;
+				sig1 <= 1;
+				end
+		end
+
+	if(NetLeft > NetRight)
+		begin
+		finLeft <= NetLeft - NetRight;
+		finRight <= 0;
+		if(!leftFlag)
+		begin
+				Ball_X_Pos <= Ball_X_Pos - finLeft;
+				sig2 <= 1;
+				end
+		end
+
+	if(NetUp > NetDown)
+		begin
+		finUp <= NetUp - NetDown;
+		finDown <= 0;
+		if(!upFlag)
+		begin
+				Ball_Y_Pos <= Ball_Y_Pos - finUp;
+				sig3 <= 1;
+				end
+		end
+	
+	if(NetDown > NetUp)
+		begin
+		finDown <= NetDown - NetUp;
+		finUp <= 0;
+		if(!downFlag)
+		begin
+				Ball_Y_Pos <= Ball_Y_Pos + finDown;
+				sig4 <= 1;
+				end
+		end
+	
+	if(collision_up > Ball_Y_Pos)
+	Ball_Y_Pos <= collision_up + 1;
+	else if((collision_left > Ball_X_Pos)&&(!upFlag))
+	Ball_X_Pos <= collision_left + 10;
+	else if(collision_right < Ball_X_Pos + 15)
+	Ball_X_Pos <= collision_right - 1 -15;
+	if(collision_down < Ball_Y_Pos)
+	Ball_Y_Pos <= collision_down -1 +15;
+				
+				
+				
+				
+				
 				if(Ball_Y_Pos > 480)
 				begin
-				Ball_Y_Pos <= 100;
-				Ball_X_Pos <= 100;
+				Ball_Y_Pos <= 464;
+				Ball_X_Pos <= 50;
 				end
 		  
 			

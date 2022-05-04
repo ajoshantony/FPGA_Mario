@@ -1,21 +1,22 @@
 
 
-
 module collisions (
 	input [9:0] X_Pos, Y_Pos, DrawX, DrawY, //input positions
 	//input [3:0] cell_REG [10:0], //This is the array of cells. Should be like 1200 4 bit cells
 	input [5:0] Right_V, Left_V, Up_V, Down_V, //input velocities
 	input frame_clk, pixel_clk, clk_50,
-	output [9:0] X_Out, Y_Out //output positions
+	output [9:0] X_Out, Y_Out, //output positions
+	output rightFlag, leftFlag, downFlag, upFlag,
+	output [9:0] collision_down, collision_up, collision_right, collision_left
 	
 
 
 );
 
-world_rom world_ROM_collisions (.read_address(cell_ADDR), .Clk(clk_50), .data_Out(sprite_ADDR));
+world_rom2 world_ROM_collisions (.read_address(cell_ADDR), .Clk(clk_50), .data_Out(sprite_ADDR));
 
 //The location of the nearest colliding pixel in each direction
-logic [9:0] collision_down, collision_up, collision_right, collision_left;
+//logic [9:0] collision_down, collision_up, collision_right, collision_left;
 
 //Net velocities for each direction because we don't handle negatives
 logic [5:0] Net_Right_V, Net_Left_V, Net_Up_V, Net_Down_V;
@@ -76,11 +77,12 @@ Set Net velocities because no 2's comp
 		Net_Up_V <= 0;
 		end
 		
-		Net_Right_V <= 1;
+		
 
 /*--------------------------------------
 Update positions based off collisions
 ----------------------------------------*/
+/*
 	if(Net_Right_V > 0)
 		begin
 		if(X_Pos + Net_Right_V + Right_Offset > collision_right)
@@ -112,8 +114,86 @@ Update positions based off collisions
 		else
 			Y_Out <= Y_Pos + Net_Down_V;
 		end
+*/
 
 
+//X_Out <= X_Pos + 1;
+//Y_Out <= Y_Pos + 1;
+
+
+
+
+//Net_Right_V <= 1;
+//Net_Down_V <= 1;
+
+
+
+
+if(Y_Pos + Net_Down_V + Down_Offset > collision_down)
+begin
+downFlag <= 1;
+end
+else
+begin
+downFlag <= 0;
+end
+
+if(X_Pos + Net_Right_V + Right_Offset > collision_right)
+begin
+rightFlag <= 1;
+end
+else
+begin
+rightFlag <= 0;
+end
+
+if(Y_Pos - Net_Up_V < collision_up)
+begin
+upFlag <= 1;
+end
+else
+begin
+upFlag <= 0;
+end
+
+if(X_Pos - Net_Left_V - Left_Offset < collision_left)
+begin
+leftFlag <= 1;
+end
+else
+begin
+leftFlag <= 0;
+end
+
+
+
+/*
+if(Y_Pos + Net_Down_V > collision_down)
+begin
+Y_Out <= collision_down -1 - Down_Offset;
+end
+else
+begin
+Y_Out <= Y_Pos + Net_Down_V;
+end
+
+if(X_Pos + Net_Right_V > collision_right)
+begin
+X_Out <= collision_right -1 -Right_Offset;
+end
+else
+begin
+X_Out <= X_Pos + Net_Right_V;
+end
+*/
+/*
+if(1==1)
+begin
+Y_Out <= collision_down -1 -Down_Offset;
+X_Out <= X_Pos;
+//X_Out <= collision_left + 1; //maybe remove offset
+end
+*/
 
 /*--------------------------------------
 Reset all the pixel_clk logic values
@@ -136,18 +216,18 @@ Determine closest collisions at each pixel
 ----------------------------------------*/
 else 
 	begin
-	cell_ADDR = DrawX[9:4] + DrawY[9:4]*40; //when we do scrolling this will have an logic x offset
+	cell_ADDR = (DrawX[9:4] + X_Pos/10)%40 + DrawY[9:4]*40; //when we do scrolling this will have an logic x offset
 
 
 	if(sprite_ADDR[0] == 0) //even index has collision
 		begin
 
 
-		if((DrawY >= Y_Pos)&&(DrawY <= Y_Pos + 15))
+		if((DrawY >= Y_Pos)&&(DrawY <= Y_Pos + 5))
 			begin
 			if((DrawX > X_Pos)&&(DrawX < collision_right))
 				collision_right <= DrawX;
-			else if((DrawX < X_Pos)&&(DrawX > collision_left))
+			if((DrawX < X_Pos)&&(DrawX > collision_left))
 				collision_left <= DrawX;
 			end
 
@@ -155,7 +235,7 @@ else
 			begin
 			if((DrawY > Y_Pos)&&(DrawY < collision_down))
 				collision_down <= DrawY;
-			else if((DrawY < Y_Pos)&&(DrawY > collision_up))
+			if((DrawY < Y_Pos)&&(DrawY > collision_up))
 				collision_up <= DrawY;
 			end
 

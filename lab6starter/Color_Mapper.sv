@@ -22,16 +22,44 @@ module counter (input  logic Clk, Add_En,
 
     end
 	
-
 endmodule
+
+module counter_mario_ani (input logic Clk,
+              output logic [3:0]  count); //make 16 bits
+
+    always_ff @ (posedge Clk)
+    begin
+	 	 
+		
+			count <= count + 1;
+
+    end
+	
+endmodule
+
+
+module mario_look_dir (input  logic Clk, 
+					input logic [1:0] Add_En,
+              output logic  count);
+    always_ff @ (posedge Clk)
+    begin
+	 if((Add_En == 0)||(Add_En ==1))
+			count <= Add_En;
+		
+    end
+	
+endmodule
+
 
 module  color_mapper ( input        [9:0] BallX, BallY, DrawX, DrawY, Ball_size, score,
 								input [7:0] keycode,
+								input [20:0] logicalX,
 							  input Clk_50,blank,pixel_clk, frame_clk,
                        output logic [7:0]  Red, Green, Blue );
     
     logic ball_on;
 	 logic [5:0] questioncount;
+	 logic [9:0] DrawXTemp;
 	 
 	 
 	 
@@ -87,16 +115,33 @@ world_rom world_ROM_Color_Mapper (.read_address(back_ADDR), .Clk(Clk_50), .data_
 	 
 palette_16_rom palette_16_rom_mod (.read_address(sprite_ADDR), .Clk(Clk_50), .data_Out(back_RGB));
 
+
+logic [10:0] mario_ani_ADDR;
+logic [23:0] mario_ani_RGB;
+
+
+mario_ani_rom mario_ani_rom_mod(.read_address(mario_ani_ADDR),.Clk(Clk_50),
+									.data_Out(mario_ani_RGB)
+);
+// 0: mario stand, 1: ani1, 2:ani2, 3:ani3, 4: mario jump
+logic [3:0] mario_ani_count;
+logic [1:0] mario_ani_index;
+logic add_look,look_dir;
+counter_mario_ani counter_mario_ani_mod(.Clk(frame_clk), .count(mario_ani_count)); 
+
+mario_look_dir lookdir_mod(.Clk(frame_clk), .Add_En(add_look),
+              .count(look_dir)
+);				  
+
 always_comb
 begin:sprite_addr_calc
 sprite_x = DrawX - BallX;
 sprite_y = DrawY - BallY;
 
 //if(BallX > 240)
-
+DrawXTemp = DrawX+1;
 //scroll_shift = BallX + scroll_shift;
-//back_ADDR = (DrawX[9:4]+BallX/10)%40+ DrawY[9:4]*40;
-back_ADDR = (DrawX[9:4] + BallX/10)%40+ DrawY[9:4]*40;
+back_ADDR = (DrawXTemp[9:4]+logicalX/6)+30*logicalX+ DrawY[9:4]*40;
 
 
 	if((questioncount >= 0)&&(questioncount < 21)&&(sprite_Index == 6))
@@ -111,30 +156,60 @@ back_ADDR = (DrawX[9:4] + BallX/10)%40+ DrawY[9:4]*40;
 	begin 
 	sprite_ADDR = (256*10 + DrawX[3:0]+DrawY[3:0]*16);
 	end
+	
 else
 begin 
 sprite_ADDR = (256*sprite_Index + DrawX[3:0]+DrawY[3:0]*16);
 end
-
-
+mario_ani_index = 0;
+	//make mario ani slower
+	if((mario_ani_count >= 0)&&(mario_ani_count< 5)) // 0->5
+	begin
+	mario_ani_index = 1;
+	end
+	else if((mario_ani_count >=5)&&(mario_ani_count < 11)) //5->
+	begin
+	mario_ani_index = 2;
+	end
+	else if((mario_ani_count >=11))
+	begin 
+	mario_ani_index = 3;
+	end
+	
+//logic add_look,look_dir;
+add_look = 3;
 if(keycode == 8'h07) //right
 begin
-m_stand_addr = sprite_x + sprite_y*16;
+mario_ani_ADDR = 256*mario_ani_index + sprite_x + sprite_y*16;
+add_look = 1;
 end
 
 else if(keycode == 8'h04)//left
 begin
-m_stand_addr = (15-sprite_x) + sprite_y*16;
+mario_ani_ADDR = 256*mario_ani_index +(15-sprite_x) + sprite_y*16;
+add_look = 0;
 end
 
-else //jump
+else if(keycode == 8'h26) //jump
 begin
-m_stand_addr = sprite_x + sprite_y*16; //replace with jump mario
+mario_ani_ADDR = 256*4+ sprite_x + sprite_y*16; //replace with jump mario
 end
+
+else
+begin
+	if(look_dir == 1)
+	begin
+	mario_ani_ADDR = sprite_x + sprite_y*16; //mario standing
+	end
+	else
+	begin
+	mario_ani_ADDR =(15-sprite_x) + sprite_y*16;
+	end
+end
+
 
 
 //640 by 480 
-
 end
 
 
@@ -145,11 +220,11 @@ end
     begin:RGB_Display
 	if(blank == 1)
 	begin
-        if ((ball_on == 1'b1) && (m_stand_RGB != 24'hee35ff) ) 
+        if ((ball_on == 1'b1) && (mario_ani_RGB != 24'hee35ff) ) 
         begin 
-            Red <= m_stand_RGB[23:16];
-            Green <= m_stand_RGB[15:8];
-            Blue <= m_stand_RGB[7:0];
+            Red <= mario_ani_RGB[23:16];
+            Green <= mario_ani_RGB[15:8];
+            Blue <= mario_ani_RGB[7:0];
         end
 		  else
 		  begin

@@ -74,6 +74,7 @@ logic Reset_h, vssig, blank, sync, VGA_Clk;
 	logic [7:0] keycode;
 	logic [9:0] score;
 	logic lFlag, rFlag, uFlag, dFlag, sig1, sig2, sig3, sig4;
+	logic [20:0] logicalX;
 
 //=======================================================
 //  Structural coding
@@ -183,15 +184,16 @@ ball ball_mod(.Reset(Reset_h), .frame_clk(VGA_VS), .pixel_clk(VGA_clk), .clk_50(
                .BallX(ballxsig), .BallY(ballysig), .BallS(ballsizesig),
 					.DrawX(drawxsig), .DrawY(drawysig), .score(score), .lFlag(lFlag),
 					.rFlag(rFlag), .uFlag(uFlag), .dFlag(dFlag),
-					.sig1(sig1), .sig2(sig2), .sig3(sig3), .sig4(sig4)
+					.sig1(sig1), .sig2(sig2), .sig3(sig3), .sig4(sig4),
+					.logicalX(logicalX)
 );	
 
 
 
 color_mapper color_mod( .BallX(ballxsig),.BallY(ballysig), .DrawX(drawxsig), .DrawY(drawysig),.Ball_size(ballsizesig),
 								.Clk_50(MAX10_CLK1_50),.pixel_clk(VGA_clk),.blank(blank),
-                       .Red(Red),.Green(Green), .keycode(keycode), .Blue(Blue), .score(score), .frame_clk(VGA_VS)
-
+                       .Red(Red),.Green(Green), .keycode(keycode), .Blue(Blue), .score(score), .frame_clk(VGA_VS),
+								.logicalX(logicalX)
 );			
 								
 								

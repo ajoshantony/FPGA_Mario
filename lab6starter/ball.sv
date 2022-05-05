@@ -21,19 +21,24 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 					input [9:0] DrawX, DrawY, score,
                output [9:0]  BallX, BallY, BallS,
 					output lFlag, rFlag, uFlag, dFlag,
-					output sig1, sig2, sig3, sig4);
+					output sig1, sig2, sig3, sig4,
+					output [20:0] logicalX
+					);
     
     logic [9:0] Ball_X_Pos, Ball_Right_Motion, Ball_Left_Motion, Ball_Y_Pos, Ball_Up_Motion, Ball_Down_Motion, Ball_Size;
 	 logic [9:0] New_X_Pos, New_Y_Pos;
-	 logic downFlag, upFlag, leftFlag, rightFlag, addTrue, jumpReset;
+	 logic downFlag, upFlag, leftFlag, rightFlag, addTrue, jumpReset, beginFlag, backFlag, horizFlag;
 	 logic [5:0] jumpCount;
 	 logic [2:0] speed, terminal;
 	 logic [5:0] fallDownSpeed, fallUpSpeed, NetRight, NetLeft, NetUp, NetDown;
 	 logic [5:0] finUp, finDown, finRight, finLeft;
 	 logic [9:0] collision_down, collision_up, collision_right, collision_left;
+	 logic [5:0] Right_Offset, Left_Offset, Up_Offset, Down_Offset;
+	 logic [9:0] X_Out, Y_Out;
 	 
-    parameter [9:0] Ball_X_Center=464;  // Center position on the X axis
-    parameter [9:0] Ball_Y_Center=50;  // Center position on the Y axis
+	 
+    parameter [9:0] Ball_X_Center=50;  // Center position on the X axis
+    parameter [9:0] Ball_Y_Center=300;  // Center position on the Y axis
     parameter [9:0] Ball_X_Min=0;       // Leftmost point on the X axis
     parameter [9:0] Ball_X_Max=639;     // Rightmost point on the X axis
     parameter [9:0] Ball_Y_Min=0;       // Topmost point on the Y axis
@@ -49,7 +54,8 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 	.clk_50(clk_50), .X_Out(New_X_Pos),.Y_Out(New_Y_Pos), .upFlag(upFlag), 
 	.downFlag(downFlag), .rightFlag(rightFlag), .leftFlag(leftFlag),
 	.collision_down(collision_down), .collision_up(collision_up), 
-	.collision_left(collision_left), .collision_right(collision_right));
+	.collision_left(collision_left), .collision_right(collision_right),
+	.logicalX(logicalX));
 	
 	
 	
@@ -70,8 +76,9 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 				sig2 <= 0;
 				sig3 <= 0;
 				sig4 <= 0;
+				beginFlag <= 0;
+				logicalX <= 0;
         end
-           
         else 
         begin 
 		  //This logic for the ball here can be reworked to take the coordinates of the
@@ -175,6 +182,7 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 								
 							  //Ball_Left_Motion <= 0;
 								Ball_Right_Motion <= speed;//D
+								beginFlag<=1;
 								//Ball_Up_Motion <= 0;
 								//if(downFlag)
 								//Ball_Down_Motion <= 0;
@@ -225,7 +233,7 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 					        
 				else if((keycode == 8'h07)/*&&!rightFlag*/)
 							begin
-								
+								beginFlag<=1;
 							  Ball_Left_Motion <= 0;
 								Ball_Right_Motion <= speed;//D
 								Ball_Up_Motion <= fallUpSpeed;
@@ -285,7 +293,30 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 				 NetLeft <= Ball_Left_Motion;
 				 NetUp <= Ball_Up_Motion; //+ fallUpSpeed;
 				 NetDown <= Ball_Down_Motion; //+ fallDownSpeed;
-				 
+			 
+		if(Ball_Right_Motion > Ball_Left_Motion) 
+		begin
+		NetRight <= Ball_Right_Motion - Ball_Left_Motion;
+		NetLeft <= 0;
+		end
+
+	else
+		begin
+		NetLeft <= Ball_Left_Motion - Ball_Right_Motion;
+		NetRight <= 0;
+		end
+
+	if(Ball_Up_Motion > Ball_Down_Motion)
+		begin
+		NetUp <= Ball_Up_Motion - Ball_Down_Motion;
+		NetDown <= 0;
+		end
+	
+	else
+		begin
+		NetDown <= Ball_Down_Motion - Ball_Up_Motion;
+		NetUp <= 0;
+		end
 				 
 				 //Ball_X_Pos <= New_X_Pos;
 				 //Ball_Y_Pos <= New_Y_Pos;
@@ -295,7 +326,7 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 				uFlag <= upFlag;
 				dFlag <= downFlag;
 				
-			
+		
 		if(rightFlag)
 		NetRight <= 0;
 		if(leftFlag)
@@ -304,8 +335,56 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 		NetDown <= 0;
 		if(upFlag)
 		NetUp <= 0;
-			
-			
+		
+		
+		backFlag <= 1;
+		
+		
+		/*
+		if(Ball_X_Pos >= 320)
+		begin
+		backFlag <= 0;
+		Ball_X_Pos <= 320;
+		if(NetRight > NetLeft)
+		begin
+		finRight <= NetRight - NetLeft;
+		if(!(Ball_X_Pos + finRight + 30 > collision_right))
+		begin
+				logicalX <= logicalX + 1;
+				sig1 <= 1;
+				end
+		end
+		else if(NetLeft > NetRight)
+		backFlag <= 1;
+		if(NetUp > NetDown)
+		begin
+		finUp <= NetUp - NetDown;
+		finDown <= 0;
+		if(!upFlag)
+		begin
+				Ball_Y_Pos <= Ball_Y_Pos - finUp;
+				sig3 <= 1;
+				end
+		end
+	
+	if(NetDown > NetUp)
+		begin
+		finDown <= NetDown - NetUp;
+		finUp <= 0;
+		if(!downFlag)
+		begin
+				Ball_Y_Pos <= Ball_Y_Pos + finDown;
+				sig4 <= 1;
+				end
+		end
+		end
+		
+		
+		
+		
+		
+		if(backFlag || Ball_X_Pos < 320)
+		begin
 		if(NetRight > NetLeft) 
 		begin
 		finRight <= NetRight - NetLeft;
@@ -358,20 +437,120 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 	Ball_X_Pos <= collision_right - 1 -15;
 	if(collision_down < Ball_Y_Pos)
 	Ball_Y_Pos <= collision_down -1 +15;
+	end	
+	*/
+	
+	//Older collision logic transplanted to ball
+	
+Right_Offset <= 15;
+Left_Offset <= 0;
+Up_Offset <= 0;
+Down_Offset <= 15;
+if(beginFlag)
+begin
+
+if(Ball_X_Pos >= 320)
+begin
+backFlag <= 0;
+Ball_X_Pos <= 320;
+		if(NetRight > NetLeft)
+		begin
+		finRight <= NetRight - NetLeft;
+		if(!(Ball_X_Pos + finRight + 30 > collision_right))
+		begin
+				logicalX <= logicalX + 1;
+				sig1 <= 1;
+				end
+		end
+else if(NetLeft > NetRight)
+		backFlag <= 1;
+		
+		if(NetUp > 0)
+		begin
+		if(Ball_Y_Pos - NetUp + Up_Offset < collision_up) //possible bug here is getting stuck on ceilings in a jump until timer runs out. Solve by adding a zero output for up Veclocity if this is the case.
+			Ball_Y_Pos <= collision_up + 1 + Up_Offset; //maybe remove offset
+		else
+			Ball_Y_Pos <= Ball_Y_Pos - NetUp;
+		end
+
+	else
+		begin
+		if(Ball_Y_Pos + NetDown + Down_Offset > collision_down)
+			Ball_Y_Pos <= collision_down - 1 - Down_Offset; //maybe remove offset
+		else
+			Ball_Y_Pos <= Ball_Y_Pos + NetDown;
+		end	
+		
+
+end
+
+
+if(backFlag || Ball_X_Pos < 320)
+begin
+horizFlag <= 0;
+if(NetRight > 0)
+		begin
+		if(Ball_X_Pos + NetRight + Right_Offset > collision_right)
+		begin
+			X_Out = collision_right - 1 -Right_Offset; //maybe remove offset
+			horizFlag <= 1;
+			end
+		else
+			X_Out = Ball_X_Pos + NetRight;
+		end
+
+	else
+		begin
+		if(Ball_X_Pos - NetLeft + Left_Offset < collision_left)
+		begin
+			X_Out = collision_left + 1 + Left_Offset; //maybe remove offset
+			horizFlag <= 1;
+			end
+		else
+			X_Out = Ball_X_Pos - NetLeft;
+		end
+if((NetUp > 0))
+		begin
+		if((Ball_Y_Pos - NetUp + Up_Offset < collision_up)&&(!horizFlag)) //possible bug here is getting stuck on ceilings in a jump until timer runs out. Solve by adding a zero output for up Veclocity if this is the case.
+			Y_Out = collision_up + 1 + Up_Offset; //maybe remove offset
+		else
+			Y_Out = Ball_Y_Pos - NetUp;
+		end
+
+	else
+		begin
+		if((Ball_Y_Pos + NetDown + Down_Offset > collision_down))
+			Y_Out = collision_down - 1 - Down_Offset; //maybe remove offset
+		else
+			Y_Out = Ball_Y_Pos + NetDown;
+		end	
 				
-				
-				
-				
-				
+	
+	
+	
+	if(beginFlag)
+	begin
+		Ball_X_Pos <= X_Out;
+		Ball_Y_Pos <= Y_Out;
+		end
+		else
+		begin
+		Ball_X_Pos <= Ball_X_Pos;
+		Ball_Y_Pos <= Ball_Y_Pos;
+		end
+	
+		
+		/*
 				if(Ball_Y_Pos > 480)
 				begin
 				Ball_Y_Pos <= 464;
 				Ball_X_Pos <= 50;
 				end
-		  
+		  */
 			
-		end  
-		
+		end 
+	end	
+		end
     end
        
     assign BallX = Ball_X_Pos;
@@ -380,5 +559,6 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
    
     assign BallS = Ball_Size;
     
+	 
 
 endmodule

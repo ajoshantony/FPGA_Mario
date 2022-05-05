@@ -5,6 +5,7 @@ module collisions (
 	//input [3:0] cell_REG [10:0], //This is the array of cells. Should be like 1200 4 bit cells
 	input [5:0] Right_V, Left_V, Up_V, Down_V, //input velocities
 	input frame_clk, pixel_clk, clk_50,
+	input [20:0] logicalX,
 	output [9:0] X_Out, Y_Out, //output positions
 	output rightFlag, leftFlag, downFlag, upFlag,
 	output [9:0] collision_down, collision_up, collision_right, collision_left
@@ -216,7 +217,7 @@ Determine closest collisions at each pixel
 ----------------------------------------*/
 else 
 	begin
-	cell_ADDR = (DrawX[9:4] + X_Pos/10)%40 + DrawY[9:4]*40; //when we do scrolling this will have an logic x offset
+	cell_ADDR = (DrawX[9:4] + logicalX/6) +30*logicalX + DrawY[9:4]*40; //when we do scrolling this will have an logic x offset
 
 
 	if(sprite_ADDR[0] == 0) //even index has collision

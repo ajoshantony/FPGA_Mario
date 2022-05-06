@@ -106,10 +106,18 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 				logicalX <= 0;
 				gameTime <= 600;
 				endFlag <= 0;
+				score <= 0;
 		  end
 		  else if(endFlag)
 		  begin
 		  //do nothing really, the color_mapper takes over with a victory screen
+		  if(gameTime != 0)
+		  begin
+		  score <= score + 1;
+		  gameTime <= gameTime - 1;
+		  end
+		  if(Ball_Y_Pos <= 400)
+			Ball_Y_Pos <= Ball_Y_Pos + 1;
 		  end
         else 
         begin 
@@ -183,16 +191,18 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 					  leftFlag <= 1;
 					  end
 			*/	
-			score <= score+1;
+			//score <= score+1;
 			if((collisionIndexRight == 6)||(collisionIndexLeft == 6)||(collisionIndexUp == 6)||(collisionIndexDown == 6))
 				score <= score + 10;
+				
 			gameTimeCounter <= gameTimeCounter + 1;
 			if(gameTimeCounter == 63)
 			gameTime <= gameTime-1;
 			
-			if(logicalX >= 500)
+			if(Ball_X_Pos >= 620)
 			begin
-			//endFlag <= 1;
+			endFlag <= 1;
+			
 			//score <= score + gameTime;
 			end
 			
@@ -371,6 +381,8 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 				 //Ball_X_Pos <= New_X_Pos;
 				 //Ball_Y_Pos <= New_Y_Pos;
 				 
+		if(Ball_X_Pos < 6)
+		NetLeft <= 0;
 				lFlag <= leftFlag;
 				rFlag <= rightFlag;
 				uFlag <= upFlag;
@@ -499,7 +511,7 @@ Down_Offset <= 15;
 if(beginFlag)
 begin
 
-if(Ball_X_Pos >= 320)
+if((Ball_X_Pos >= 320)&&(logicalX<1180))
 begin
 backFlag <= 0;
 Ball_X_Pos <= 320;
@@ -535,7 +547,7 @@ else if(NetLeft > NetRight)
 end
 
 
-if(backFlag || Ball_X_Pos < 320)
+if(backFlag || Ball_X_Pos < 320 || logicalX >= 1180)
 begin
 horizFlag <= 0;
 if(NetRight > 0)

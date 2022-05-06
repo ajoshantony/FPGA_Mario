@@ -168,35 +168,35 @@ begin
 leftFlag <= 0;
 end
 
-if(rightFlag)
-begin
+//if(rightFlag)
+//begin
 tempX <= X_Pos + 18;
 cell_ADDR <= (tempX[9:4] + logicalX/6)%40 + Y_Pos[9:4]*40 + (tempX[9:4] + logicalX/6)/40*1200;
 collisionIndexRight <= sprite_ADDR;
-end
+//end
 
-if(leftFlag)
-begin
+//if(leftFlag)
+//begin
 tempX <= X_Pos -2;
 cell_ADDR <= (tempX[9:4] + logicalX/6)%40 + Y_Pos[9:4]*40 + (tempX[9:4] + logicalX/6)/40*1200;
 collisionIndexLeft <= sprite_ADDR;
-end
+//end
 
-if(upFlag)
-begin
+//if(upFlag)
+//begin
 tempX <= X_Pos;
 tempY <= Y_Pos-2;
 cell_ADDR <= (tempX[9:4] + logicalX/6)%40 + tempY[9:4]*40 + (tempX[9:4] + logicalX/6)/40*1200;
 collisionIndexUp <= sprite_ADDR;
-end
+//end
 
-if(downFlag)
-begin
+//if(downFlag)
+//begin
 tempX <= X_Pos;
 tempY <= Y_Pos+18;
 cell_ADDR <= (tempX[9:4] + logicalX/6)%40 + tempY[9:4]*40 + (tempX[9:4] + logicalX/6)/40*1200;
 collisionIndexDown <= sprite_ADDR;
-end
+//end
 
 
 

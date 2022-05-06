@@ -14,7 +14,7 @@ module  world_rom
 );
 
 // mem has width of 3 bits and a total of 400 addresses
-logic [4:0] mem [0:3599];
+logic [4:0] mem [0:7199];
 
 initial
 begin

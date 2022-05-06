@@ -18,11 +18,12 @@
 
 module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 					input [7:0] keycode,
-					input [9:0] DrawX, DrawY, score,
-               output [9:0]  BallX, BallY, BallS,
-					output lFlag, rFlag, uFlag, dFlag,
+					input [9:0] DrawX, DrawY,
+               output [9:0]  BallX, BallY, BallS, score,
+					output lFlag, rFlag, uFlag, dFlag, endFlag,
 					output sig1, sig2, sig3, sig4,
-					output [20:0] logicalX
+					output [20:0] logicalX,
+					output [9:0] gameTime
 					);
     
     logic [9:0] Ball_X_Pos, Ball_Right_Motion, Ball_Left_Motion, Ball_Y_Pos, Ball_Up_Motion, Ball_Down_Motion, Ball_Size;
@@ -57,7 +58,7 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 	.collision_left(collision_left), .collision_right(collision_right),
 	.logicalX(logicalX));
 	
-	
+	counter timercounter (.Clk(frame_clk), .count(timecount));
 	
     always_ff @ (posedge Reset or posedge frame_clk )
     begin: Move_Ball
@@ -78,7 +79,33 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 				sig4 <= 0;
 				beginFlag <= 0;
 				logicalX <= 0;
+				gameTime <= 600;
+				endFlag <= 0;
         end
+		  else if(gameTime == 0)
+		  begin
+		  Ball_Up_Motion <= 10'd0; //Ball_Y_Step;
+				Ball_Down_Motion <= 10'd0; //Ball_Y_Step;
+				Ball_Right_Motion <= 10'd0; //Ball_X_Step;
+				Ball_Left_Motion <= 10'd0; //Ball_X_Step;
+				Ball_Y_Pos <= Ball_Y_Center;
+				Ball_X_Pos <= Ball_X_Center;
+				jumpCount <= 0;
+				speed <= 2;
+				terminal <= 3;
+				sig1 <= 0;
+				sig2 <= 0;
+				sig3 <= 0;
+				sig4 <= 0;
+				beginFlag <= 0;
+				logicalX <= 0;
+				gameTime <= 600;
+				endFlag <= 0;
+		  end
+		  else if(endFlag)
+		  begin
+		  //do nothing really, the color_mapper takes over with a victory screen
+		  end
         else 
         begin 
 		  //This logic for the ball here can be reworked to take the coordinates of the
@@ -150,7 +177,17 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 					  Ball_Left_Motion <= 0;
 					  leftFlag <= 1;
 					  end
-			*/		  
+			*/		
+			if(timecount == 63)
+			gameTime <= gameTime-1;
+			
+			if(logicalX >= 500)
+			begin
+			//endFlag <= 1;
+			//score <= score + gameTime;
+			end
+			
+			
 		  if(jumpCount == 0)
 		  begin
 		  
@@ -326,7 +363,7 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 				uFlag <= upFlag;
 				dFlag <= downFlag;
 				
-		
+		/*
 		if(rightFlag)
 		NetRight <= 0;
 		if(leftFlag)
@@ -335,7 +372,7 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 		NetDown <= 0;
 		if(upFlag)
 		NetUp <= 0;
-		
+		*/
 		
 		backFlag <= 1;
 		

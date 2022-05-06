@@ -7,14 +7,14 @@
 module  world_rom2
 (
 
-		input [10:0]  read_address,
+		input [11:0]  read_address,
 		input  Clk,
 
 		output logic [4:0] data_Out
 );
 
 // mem has width of 3 bits and a total of 400 addresses
-logic [4:0] mem [0:1199];
+logic [4:0] mem [0:2399];
 
 initial
 begin

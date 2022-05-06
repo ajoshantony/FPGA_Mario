@@ -27,8 +27,9 @@ logic [5:0] Right_Offset, Left_Offset, Up_Offset, Down_Offset;
 
 logic [10:0] ac;
 
-logic [10:0] cell_ADDR;
+logic [12:0] cell_ADDR;
 logic [4:0] sprite_ADDR;
+logic [9:0] tempX;
 
 assign Right_Offset = 15;
 assign Left_Offset = 0;
@@ -217,8 +218,9 @@ Determine closest collisions at each pixel
 ----------------------------------------*/
 else 
 	begin
-	cell_ADDR = (DrawX[9:4] + logicalX/6) +30*logicalX + DrawY[9:4]*40; //when we do scrolling this will have an logic x offset
-
+	tempX <= DrawX+1;
+	cell_ADDR <= (tempX[9:4] + logicalX/6)%40 + DrawY[9:4]*40 + (tempX[9:4] + logicalX/6)/40*1200; //when we do scrolling this will have an logic x offset
+	
 
 	if(sprite_ADDR[0] == 0) //even index has collision
 		begin

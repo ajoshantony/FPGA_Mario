@@ -54,12 +54,21 @@ endmodule
 module  color_mapper ( input        [9:0] BallX, BallY, DrawX, DrawY, Ball_size, score,
 								input [7:0] keycode,
 								input [20:0] logicalX,
-							  input Clk_50,blank,pixel_clk, frame_clk,
+								input [9:0] gameTime,
+							  input Clk_50,blank,pixel_clk, frame_clk, endFlag,
                        output logic [7:0]  Red, Green, Blue );
     
     logic ball_on;
 	 logic [5:0] questioncount;
 	 logic [9:0] DrawXTemp;
+	 logic [3:0] score1_Index, score2_Index, score3_Index;
+	 logic [3:0] time1_Index, time2_Index, time3_Index;
+	 logic [11:0] score1ADDR, score2ADDR, score3ADDR;
+	 logic [11:0] time1ADDR, time2ADDR, time3ADDR;
+	 logic [23:0] time1RGB, time2RGB, time3RGB, score1RGB, score2RGB, score3RGB;
+	 logic [9:0] time1_x, time2_x, time3_x, time1_y, time2_y, time3_y;
+	 logic [9:0] score1_x, score2_x, score3_x, score1_y, score2_y, score3_y;
+	 logic time1_on, time2_on, time3_on, score1_on, score2_on, score3_on;
 	 
 	 
 	 
@@ -93,10 +102,65 @@ module  color_mapper ( input        [9:0] BallX, BallY, DrawX, DrawY, Ball_size,
     else 
             ball_on = 1'b0;
 		
+		if ((DrawX >= time1_x) &&
+       (DrawX < time1_x + 16) &&
+       (DrawY >= time1_y) &&
+       (DrawY < time1_y + 16))
+				time1_on = 1;
+		else
+				time1_on = 0;
+				
+		if ((DrawX >= time2_x) &&
+       (DrawX < time2_x + 16) &&
+       (DrawY >= time2_y) &&
+       (DrawY < time2_y + 16))
+				time2_on = 1;
+		else
+				time2_on = 0;
+				
+		if ((DrawX >= time3_x) &&
+       (DrawX < time3_x + 16) &&
+       (DrawY >= time3_y) &&
+       (DrawY < time3_y + 16))
+				time3_on = 1;
+		else
+				time3_on = 0;
+		
+		if ((DrawX >= score1_x) &&
+       (DrawX < score1_x + 16) &&
+       (DrawY >= score1_y) &&
+       (DrawY < score1_y + 16))
+				score1_on = 1;
+		else
+				score1_on = 0;
+				
+				
+		if ((DrawX >= score2_x) &&
+       (DrawX < score2_x + 16) &&
+       (DrawY >= score2_y) &&
+       (DrawY < score2_y + 16))
+				score2_on = 1;
+		else
+				score2_on = 0;
+				
+		if ((DrawX >= score3_x) &&
+       (DrawX < score3_x + 16) &&
+       (DrawY >= score3_y) &&
+       (DrawY < score3_y + 16))
+				score3_on = 1;
+		else
+				score3_on = 0;
+				
+		
+				
+				
+				
      end 
   
  mario_standing_rom mario_standing_ROM_0(.read_address(m_stand_addr), .Clk(Clk_50),.data_Out(m_stand_RGB)
 );
+
+
 
 counter questioncounter (.Clk(frame_clk), .count(questioncount));
 
@@ -133,6 +197,20 @@ mario_look_dir lookdir_mod(.Clk(frame_clk), .Add_En(add_look),
               .count(look_dir)
 );				  
 
+number_rom score1_rom(.read_address(score1ADDR), .Clk(Clk_50), .data_Out(score1RGB)
+);
+number_rom score2_rom(.read_address(score2ADDR), .Clk(Clk_50), .data_Out(score2RGB)
+);
+number_rom score3_rom(.read_address(score3ADDR), .Clk(Clk_50), .data_Out(score3RGB)
+);
+
+number_rom time1_rom(.read_address(time1ADDR), .Clk(Clk_50), .data_Out(time1RGB)
+);
+number_rom time2_rom(.read_address(time2ADDR), .Clk(Clk_50), .data_Out(time2RGB)
+);
+number_rom time3_rom(.read_address(time3ADDR), .Clk(Clk_50), .data_Out(time3RGB)
+);
+
 always_comb
 begin:sprite_addr_calc
 sprite_x = DrawX - BallX;
@@ -141,7 +219,7 @@ sprite_y = DrawY - BallY;
 //if(BallX > 240)
 DrawXTemp = DrawX+1;
 //scroll_shift = BallX + scroll_shift;
-back_ADDR = (DrawXTemp[9:4]+logicalX/6)+30*logicalX+ DrawY[9:4]*40;
+back_ADDR = (DrawXTemp[9:4]+logicalX/6)%40+ DrawY[9:4]*40 + (DrawXTemp[9:4]+logicalX/6)/40*1200; 
 
 
 	if((questioncount >= 0)&&(questioncount < 21)&&(sprite_Index == 6))
@@ -175,7 +253,38 @@ mario_ani_index = 0;
 	begin 
 	mario_ani_index = 3;
 	end
-	
+score1_Index = score/100;
+score2_Index = (score%100)/10;
+score3_Index = score%10;
+
+time1_Index = gameTime/100;
+time2_Index = (gameTime%100)/10;
+time3_Index = gameTime%10;
+
+score1_x = 16;
+score2_x = 32;
+score3_x = 48;
+
+time1_x = 544;
+time2_x = 560;
+time3_x = 576;
+
+score1_y = 16;
+score2_y = 16;
+score3_y = 16;
+
+time1_y = 16;
+time2_y = 16;
+time3_y = 16;
+
+score1ADDR = 256*score1_Index + DrawX[3:0] + DrawY[3:0]*16;
+score2ADDR = 256*score2_Index + DrawX[3:0] + DrawY[3:0]*16;
+score3ADDR = 256*score3_Index + DrawX[3:0] + DrawY[3:0]*16;
+
+time1ADDR = 256*time1_Index + DrawX[3:0] + DrawY[3:0]*16;
+time2ADDR = 256*time2_Index + DrawX[3:0] + DrawY[3:0]*16;
+time3ADDR = 256*time3_Index + DrawX[3:0] + DrawY[3:0]*16;
+
 //logic add_look,look_dir;
 add_look = 3;
 if(keycode == 8'h07) //right
@@ -226,6 +335,42 @@ end
             Green <= mario_ani_RGB[15:8];
             Blue <= mario_ani_RGB[7:0];
         end
+		  else if(time1_on)
+		  begin
+				Red <= time1RGB[23:16];
+            Green <= time1RGB[15:8];
+            Blue <= time1RGB[7:0];
+		  end
+		  else if(time2_on)
+		  begin
+				Red <= time2RGB[23:16];
+            Green <= time2RGB[15:8];
+            Blue <= time2RGB[7:0];
+		  end
+		  else if(time3_on)
+		  begin
+				Red <= time3RGB[23:16];
+            Green <= time3RGB[15:8];
+            Blue <= time3RGB[7:0];
+		  end
+		  else if(score1_on)
+		  begin
+				Red <= score1RGB[23:16];
+            Green <= score1RGB[15:8];
+            Blue <= score1RGB[7:0];
+		  end
+		  else if(score2_on)
+		  begin
+				Red <= score2RGB[23:16];
+            Green <= score2RGB[15:8];
+            Blue <= score2RGB[7:0];
+		  end
+		  else if(score3_on)
+		  begin
+				Red <= score3RGB[23:16];
+            Green <= score3RGB[15:8];
+            Blue <= score3RGB[7:0];
+		  end
 		  else
 		  begin
 				Red <= back_RGB[23:16];

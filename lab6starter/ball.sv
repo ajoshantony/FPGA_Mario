@@ -20,10 +20,11 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 					input [7:0] keycode,
 					input [9:0] DrawX, DrawY,
                output [9:0]  BallX, BallY, BallS, score,
-					output lFlag, rFlag, uFlag, dFlag, endFlag,
-					output sig1, sig2, sig3, sig4,
+					output lFlag, rFlag, uFlag, dFlag, endFlag, lookDir,
+					output sig1, sig2, sig3, sig4, questionFlag,
 					output [20:0] logicalX,
-					output [9:0] gameTime
+					output [9:0] gameTime,
+					output [4:0] collisionIndexRight, collisionIndexLeft, collisionIndexUp, collisionIndexDown
 					);
     
     logic [9:0] Ball_X_Pos, Ball_Right_Motion, Ball_Left_Motion, Ball_Y_Pos, Ball_Up_Motion, Ball_Down_Motion, Ball_Size;
@@ -36,10 +37,11 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 	 logic [9:0] collision_down, collision_up, collision_right, collision_left;
 	 logic [5:0] Right_Offset, Left_Offset, Up_Offset, Down_Offset;
 	 logic [9:0] X_Out, Y_Out;
+	 logic [5:0] gameTimeCounter;
 	 
 	 
     parameter [9:0] Ball_X_Center=50;  // Center position on the X axis
-    parameter [9:0] Ball_Y_Center=300;  // Center position on the Y axis
+    parameter [9:0] Ball_Y_Center=400;  // Center position on the Y axis
     parameter [9:0] Ball_X_Min=0;       // Leftmost point on the X axis
     parameter [9:0] Ball_X_Max=639;     // Rightmost point on the X axis
     parameter [9:0] Ball_Y_Min=0;       // Topmost point on the Y axis
@@ -56,9 +58,12 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 	.downFlag(downFlag), .rightFlag(rightFlag), .leftFlag(leftFlag),
 	.collision_down(collision_down), .collision_up(collision_up), 
 	.collision_left(collision_left), .collision_right(collision_right),
-	.logicalX(logicalX));
+	.logicalX(logicalX), .collisionIndexRight(collisionIndexRight), 
+	.collisionIndexLeft(collisionIndexLeft), .collisionIndexUp(collisionIndexUp), 
+	.collisionIndexDown(collisionIndexDown)
+	);
 	
-	counter timercounter (.Clk(frame_clk), .count(timecount));
+	//counter timercounter (.Clk(frame_clk), .count(timecount));
 	
     always_ff @ (posedge Reset or posedge frame_clk )
     begin: Move_Ball
@@ -82,7 +87,7 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 				gameTime <= 600;
 				endFlag <= 0;
         end
-		  else if(gameTime == 0)
+		  else if((gameTime == 0)||(Ball_Y_Pos >= 460))
 		  begin
 		  Ball_Up_Motion <= 10'd0; //Ball_Y_Step;
 				Ball_Down_Motion <= 10'd0; //Ball_Y_Step;
@@ -177,8 +182,12 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 					  Ball_Left_Motion <= 0;
 					  leftFlag <= 1;
 					  end
-			*/		
-			if(timecount == 63)
+			*/	
+			score <= score+1;
+			if((collisionIndexRight == 6)||(collisionIndexLeft == 6)||(collisionIndexUp == 6)||(collisionIndexDown == 6))
+				score <= score + 10;
+			gameTimeCounter <= gameTimeCounter + 1;
+			if(gameTimeCounter == 63)
 			gameTime <= gameTime-1;
 			
 			if(logicalX >= 500)
@@ -206,6 +215,7 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 							begin
 
 								Ball_Left_Motion <= speed;//A
+								lookDir <= 1;
 								//Ball_Right_Motion <= 0;
 								//Ball_Up_Motion <= 0;
 								//if(downFlag)
@@ -220,6 +230,7 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 							  //Ball_Left_Motion <= 0;
 								Ball_Right_Motion <= speed;//D
 								beginFlag<=1;
+								lookDir <= 0;
 								//Ball_Up_Motion <= 0;
 								//if(downFlag)
 								//Ball_Down_Motion <= 0;
@@ -266,6 +277,7 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 								Ball_Right_Motion <= 0;
 								Ball_Up_Motion <= fallUpSpeed;
 								Ball_Down_Motion <= fallDownSpeed;
+								lookDir <= 1;
 							  end
 					        
 				else if((keycode == 8'h07)/*&&!rightFlag*/)
@@ -275,6 +287,7 @@ module  ball ( input Reset, frame_clk, pixel_clk, clk_50,
 								Ball_Right_Motion <= speed;//D
 								Ball_Up_Motion <= fallUpSpeed;
 								Ball_Down_Motion <= fallDownSpeed;
+								lookDir <= 0;
 							  end
 
 				

@@ -8,7 +8,8 @@ module collisions (
 	input [20:0] logicalX,
 	output [9:0] X_Out, Y_Out, //output positions
 	output rightFlag, leftFlag, downFlag, upFlag,
-	output [9:0] collision_down, collision_up, collision_right, collision_left
+	output [9:0] collision_down, collision_up, collision_right, collision_left,
+	output [4:0] collisionIndexRight, collisionIndexLeft, collisionIndexUp, collisionIndexDown
 	
 
 
@@ -29,7 +30,7 @@ logic [10:0] ac;
 
 logic [12:0] cell_ADDR;
 logic [4:0] sprite_ADDR;
-logic [9:0] tempX;
+logic [9:0] tempX, tempY;
 
 assign Right_Offset = 15;
 assign Left_Offset = 0;
@@ -165,6 +166,36 @@ end
 else
 begin
 leftFlag <= 0;
+end
+
+if(rightFlag)
+begin
+tempX <= X_Pos + 18;
+cell_ADDR <= (tempX[9:4] + logicalX/6)%40 + Y_Pos[9:4]*40 + (tempX[9:4] + logicalX/6)/40*1200;
+collisionIndexRight <= sprite_ADDR;
+end
+
+if(leftFlag)
+begin
+tempX <= X_Pos -2;
+cell_ADDR <= (tempX[9:4] + logicalX/6)%40 + Y_Pos[9:4]*40 + (tempX[9:4] + logicalX/6)/40*1200;
+collisionIndexLeft <= sprite_ADDR;
+end
+
+if(upFlag)
+begin
+tempX <= X_Pos;
+tempY <= Y_Pos-2;
+cell_ADDR <= (tempX[9:4] + logicalX/6)%40 + tempY[9:4]*40 + (tempX[9:4] + logicalX/6)/40*1200;
+collisionIndexUp <= sprite_ADDR;
+end
+
+if(downFlag)
+begin
+tempX <= X_Pos;
+tempY <= Y_Pos+18;
+cell_ADDR <= (tempX[9:4] + logicalX/6)%40 + tempY[9:4]*40 + (tempX[9:4] + logicalX/6)/40*1200;
+collisionIndexDown <= sprite_ADDR;
 end
 
 

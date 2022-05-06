@@ -55,7 +55,7 @@ module  color_mapper ( input        [9:0] BallX, BallY, DrawX, DrawY, Ball_size,
 								input [7:0] keycode,
 								input [20:0] logicalX,
 								input [9:0] gameTime,
-							  input Clk_50,blank,pixel_clk, frame_clk, endFlag,
+							  input Clk_50,blank,pixel_clk, frame_clk, endFlag, lookDir,
                        output logic [7:0]  Red, Green, Blue );
     
     logic ball_on;
@@ -265,9 +265,9 @@ score1_x = 16;
 score2_x = 32;
 score3_x = 48;
 
-time1_x = 544;
-time2_x = 560;
-time3_x = 576;
+time1_x = 576;
+time2_x = 592;
+time3_x = 608;
 
 score1_y = 16;
 score2_y = 16;
@@ -306,7 +306,7 @@ end
 
 else
 begin
-	if(look_dir == 1)
+	if(!lookDir)
 	begin
 	mario_ani_ADDR = sprite_x + sprite_y*16; //mario standing
 	end

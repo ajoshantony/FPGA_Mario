@@ -1,0 +1,47 @@
+--lpm_mux CBX_DECLARE_ALL_CONNECTED_PORTS="OFF" DEVICE_FAMILY="MAX 10" LPM_SIZE=2 LPM_WIDTH=5 LPM_WIDTHS=1 data result sel
+--VERSION_BEGIN 18.1 cbx_lpm_mux 2018:09:12:13:04:24:SJ cbx_mgl 2018:09:12:13:10:36:SJ  VERSION_END
+
+
+-- Copyright (C) 2018  Intel Corporation. All rights reserved.
+--  Your use of Intel Corporation's design tools, logic functions 
+--  and other software and tools, and its AMPP partner logic 
+--  functions, and any output files from any of the foregoing 
+--  (including device programming or simulation files), and any 
+--  associated documentation or information are expressly subject 
+--  to the terms and conditions of the Intel Program License 
+--  Subscription Agreement, the Intel Quartus Prime License Agreement,
+--  the Intel FPGA IP License Agreement, or other applicable license
+--  agreement, including, without limitation, that your use is for
+--  the sole purpose of programming logic devices manufactured by
+--  Intel and sold by Intel or its authorized distributors.  Please
+--  refer to the applicable agreement for further details.
+
+
+
+--synthesis_resources = lut 5 
+SUBDESIGN mux_m1b
+( 
+	data[9..0]	:	input;
+	result[4..0]	:	output;
+	sel[0..0]	:	input;
+) 
+VARIABLE 
+	result_node[4..0]	: WIRE;
+	sel_node[0..0]	: WIRE;
+	w_data110w[1..0]	: WIRE;
+	w_data60w[1..0]	: WIRE;
+	w_data74w[1..0]	: WIRE;
+	w_data86w[1..0]	: WIRE;
+	w_data98w[1..0]	: WIRE;
+
+BEGIN 
+	result[] = result_node[];
+	result_node[] = ( ((sel_node[] & w_data110w[1..1]) # ((! sel_node[]) & w_data110w[0..0])), ((sel_node[] & w_data98w[1..1]) # ((! sel_node[]) & w_data98w[0..0])), ((sel_node[] & w_data86w[1..1]) # ((! sel_node[]) & w_data86w[0..0])), ((sel_node[] & w_data74w[1..1]) # ((! sel_node[]) & w_data74w[0..0])), ((sel_node[] & w_data60w[1..1]) # ((! sel_node[]) & w_data60w[0..0])));
+	sel_node[] = ( sel[0..0]);
+	w_data110w[] = ( data[9..9], data[4..4]);
+	w_data60w[] = ( data[5..5], data[0..0]);
+	w_data74w[] = ( data[6..6], data[1..1]);
+	w_data86w[] = ( data[7..7], data[2..2]);
+	w_data98w[] = ( data[8..8], data[3..3]);
+END;
+--VALID FILE

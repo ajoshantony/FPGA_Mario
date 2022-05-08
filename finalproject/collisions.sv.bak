@@ -1,0 +1,33 @@
+module collisions (
+	input [9:0] X_Pos, Y_Pos,
+	input [3:0] cell_ADDR [10:0], //This is the array of cells. Should be like 1200 4 bit cells
+	input [5:0] Right_V, Left_V, Up_V, Down_V,
+	input frame_clk, pixel_clk,
+	output [9:0] X_Out, Y_Out;
+	
+
+
+);
+
+//The location of the nearest colliding pixel in each direction
+logic [9:0] collision_down, collisions_up, collision_right, collision_left;
+logic [5:0] Net_Right_V, Net_Left_V, Net_Up_V, Net_Down_V;
+
+always_ff @ (posedge frame_clk or posedge pixel_clk)
+begin
+if(frame_clk) //initial conditions/update outputs
+begin
+if(
+
+end
+
+end
+
+
+
+
+//have an always_ff @ (posedge frame_clk or posedge VGA_Clk)
+//go through all the pixels at the pixel_clk, and then at the very
+//end (using an if statement for the VGA_Clk) evaluate collisions based
+//off of the logic signals generated in pixel_clk. Set the X and Y Out.
+//then reset all logic signals to zero for the next frame.

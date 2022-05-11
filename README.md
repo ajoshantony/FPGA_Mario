@@ -44,18 +44,18 @@ back_ADDR = (DrawXTemp[9:4]+logicalX/6)%40+ DrawY[9:4]*40 + (DrawXTemp[9:4]+logi
 ```
 
 We had to %16 DrawX and DrawY for the dimensions for each of the blocks %40 for width of the 30x40 frame. The DrawXTemp was DrawX + 1 which was necessary to fix a shifted 
-indexing glitch for all of the background assets. In order to properly scroll through different frames we needed to add (DrawXTemp[9:4]+logicalX/6)/40*1200; so that we could get the correct slice of the 1,200 entries from one of the frames in world_rom. The logicalx was a register that stored number of blocks shifted*6 so that we could remember the correct frames while scrolling.  After we addressed a certain entry in world_rom we then used that output (sprite_index) to address the palette_16_rom so that we could print the correct pixel to the monitor. The addressing into palette_16_rom was calculated using the following formula.
-sprite_ADDR = (256*sprite_Index + DrawX[3:0]+DrawY[3:0]*16);
+indexing glitch for all of the background assets. In order to properly scroll through different frames we needed to add ``` verilog (DrawXTemp[9:4]+logicalX/6)/40*1200;``` so that we could get the correct slice of the 1,200 entries from one of the frames in world_rom. The logicalx was a register that stored number of blocks shifted*6 so that we could remember the correct frames while scrolling.  After we addressed a certain entry in world_rom we then used that output (sprite_index) to address the palette_16_rom so that we could print the correct pixel to the monitor. The addressing into palette_16_rom was calculated using the following formula.
+``` verilog sprite_ADDR = (256*sprite_Index + DrawX[3:0]+DrawY[3:0]*16);```
 
-We needed to multiply the sprite_Index by 256 since that is how many colors there are for one block. Then to maintain the row major order we need to choose which of the 256 RGB based on DrawX[3:0]+DrawY[3:0]*16 where the *16 was for the width of a block. The output from the palette_16_rom was set to the Red,Green,Blue variables for the VGA as the last else condition in an always_ff block @ posedge pixel_clk (RGB_Display block). An example of one of the frames’ output is shown in figure 4. It is the same frame that is depicted in figure 2.
+We needed to multiply the sprite_Index by 256 since that is how many colors there are for one block. Then to maintain the row major order we need to choose which of the 256 RGB based on ```verilog DrawX[3:0]+DrawY[3:0]*16``` where the *16 was for the width of a block. The output from the palette_16_rom was set to the Red,Green,Blue variables for the VGA as the last else condition in an always_ff block @ posedge pixel_clk (RGB_Display block). An example of one of the frames’ output is shown in figure 4. It is the same frame that is depicted in figure 2.
 
 Figure 4: Example frame after processing
 Displaying Score
 Our gameTime was a register that stored the current gametime. This register was created in our ball.sv and the output was exported to the Color_Mappper.sv so that we could display the score. 
-time1_Index = gameTime/100;      time2_Index = (gameTime%100)/10;      time3_Index = gameTime%10;
+``` verilog time1_Index = gameTime/100;      time2_Index = (gameTime%100)/10;      time3_Index = gameTime%10; ```
 
 We were able to get the individual numbers of the 3 digit gametime by /100 to get the hundreds place then %100 gets the bottom 2 numbers then /10 gets the 2nd number or the tens place in terms of the gameTime. In order to get the ones place number we just need to do %10. Each digit doubled as the index into the numbers_rom which stores a number sprite in order from 0-9.  An example of this indexing is shown below for the hundreds place digit which is similar to sprite_addr addressing except sprite_index is time1_index. 
-time1ADDR = 256*time1_Index + DrawX[3:0] + DrawY[3:0]*16;
+``` verilog time1ADDR = 256*time1_Index + DrawX[3:0] + DrawY[3:0]*16;```
 
 Animated Mystery Blocks
 In order to animate the mystery blocks we checked if the sprite_Index was indeed 6. We then used a 6 bit counter module to continuously count then overflow. We took advantage of this overflow by setting sprite_Index to 6 for the counter range [0,21), 8 for the counter [21,42), then 10 for counter [42,64] which made the animation cycle take around 1 second. We had a time1_on,time2_on, and time3_on values which were set when the DrawX and DrawY were in the region in the top right and within each of the respective digit regions. The Red, Green, and Blue values were set to the time (1,2, or 3) RGB value when the respective time on signal was on. 
@@ -73,24 +73,27 @@ We had a ball_on signal which used the BallX and BallY signals from ball.sv to c
 2.2 Character Control/Collision
 Character Control
 	Mario is controlled by user input through the W, A, and D keys on a keyboard. The inputs are read and delivered to the FPGA through the NIOS-II processor. The motion logic is controlled by a set of four different velocity values indicating motion in all different directions. Velocity in this context can be interpreted as a number of pixels that Mario moves in any given direction per frame. Velocity is applied to the character by simply changing their position by some amount between frames, as is shown in this snippet of rightward motion:
-X_Out = Ball_X_Pos + NetRight;
+``` verilog X_Out = Ball_X_Pos + NetRight;```
 
  The movement/controls can be separated into two distinct states: standing and jumping. In the standing state, the downward velocity is constant. It’s a simple downward velocity dragging the character down. The left and right velocities are dependent on key inputs. When A is held, the left velocity becomes equal to our speed variable (by default this is 2 pixels per frame). When D is held, then the right velocity becomes equal to our speed. The W key is used for jumping, and triggers a transition into the jumping state. In the jumping state, left and right movement is controlled the same as the standing state, but the vertical velocity is no longer constant. In the jumping state, the goal was to get a parabolic curve in our jump motion to represent realistic looking physics complete with a downward acceleration due to gravity. The desired jump motion should resemble the following:
 
 Figure : Parabolic Jump Motion
 To accomplish this, the jumping state implements a timer. This timer is initialized to 63, and counts down every frame. The velocities at the beginning of this state are also initialized to certain values. The upward velocity is initialized to 9 pixels/frame, and the downward velocity is initialized to 4 pixels/frame, generating a net upward velocity of 5 pixels/frame. The logic of the jumping state goes so that every 6 frames, the upward velocity is decreased by one. We accomplish this by using modulus, as shown in this code snippet:
+``` verilog
 if(jumpCount % 6 == 0)
    begin
    if(fallUpSpeed != 0)
    fallUpSpeed <= fallUpSpeed - 1;
    end
+```
 
 This means that after six frames, the net upward velocity will be only 4 pixels/frame. Eventually, the upward velocity and downward velocity will both be equal to 4 pixels/frame, representing the peak of the parabolic curve of Mario’s jump, after which he begins to fall as the net velocity turns downward when the upward velocity becomes 3 pixels/frame. After the upward velocity reaches zero, Mario achieves a terminal velocity of 4 pixels/frame. The jump state ends once Mario’s jump counter has reached zero, at which point his motion returns to the standing state. If Mario lands on a platform before his jump state is finished, we do not need to worry about exiting the state because his left and right motion still works just as before, and our collision logic prevents his net downward velocity from causing any problems. 
 Collision logic
 	Our collision detection is handled on a pixel-by-pixel basis using four different vectors in each direction of the player. Each of these vectors represents a register intended to store the X and Y position of the nearest collision from the player in every direction. They are initialized to the edges of the screens, as these are the farthest away possible points of collision at all times. Each pixel is determined to be a collision pixel based off of the index corresponding to its addressing in world_ROM. Each world background sprite that is intended to be collided with has intentionally been stored at an even index in our ROM. We can evaluate this by calculating the address of the sprite in our world_rom and then evaluating the least significant bit of the output sprite index, as shown in this code snippet (which uses somewhat different variable names):
-cell_ADDR <= (tempX[9:4] + logicalX/6)%40 + DrawY[9:4]*40 + (tempX[9:4] + logicalX/6)/40*1200;
+``` verilog cell_ADDR <= (tempX[9:4] + logicalX/6)%40 + DrawY[9:4]*40 + (tempX[9:4] + logicalX/6)/40*1200;
 if(sprite_ADDR[0] == 0)
 //described logic for colliding pixel ensues
+```
 
 Using an always_ff block on the pixel clock, we can functionally iterate over every pixel once per frame. For each range of X/Y position values representing Mario’s width/height, we look at each pixel evaluating whether it is a pixel belonging to a collidable world sprite and also evaluating based off Mario’s current position whether it is closer to Mario than the pixel currently stored in that particular direction’s register. These four collision registers are output to our ball.sv module, which then uses them to handle movement during collisions. If the collision is farther from Mario than his current position plus velocity would land him, then the collision is ignored and he moves freely. If the point of collision would be reached or passed through this movement, then his position would snap to be right up against the colliding wall/floor/ceiling. Additionally, we set four different flags to be triggered in this case to be wired to the FPGA LEDs for debugging purposes. 
 Here is a visualization of the collision detection logic:
@@ -128,7 +131,7 @@ Figure: Simplified Top-Level Diagram
 
 4. Module Descriptions
 Module: VGA_controller.sv
-Inputs: Clk,Reset
+Inputs: ```verilog Clk,Reset```
 Outputs: hs,vs,pixel_clk,blank,sync,[9:0] DrawX,[9:0] DrawY 
 Description: This module outputs the DrawX and DrawY variables which are the x and y coordinates of the current pixel being drawn. It also outputs a pixel clock which is half of the input Clk. The hs output is used to determine when a new line is to be drawn and vs is used to determine a new frame. The blank (active low signal) tells whether or not to draw on the monitor. 
 

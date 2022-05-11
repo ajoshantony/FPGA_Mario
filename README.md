@@ -1,30 +1,21 @@
-# ECE385-Final-Project
-ECE 385 
-Spring 2022
+#Final Project: Super Mario NES
+##ECE 385 
+##Spring 2022
+
+##BY: Ajosh Antony and Michael Garrity
 
 
-
-
-Final Project: Super Mario NES
-
-
-
-Ajosh Antony and Michael Garrity
-
-May 11, 2022 
-TA: Dohun Jeong
-
-1. Introduction 
+###1. Introduction 
 	Our Final Project was the program a game inspired by Super Mario Bros. for the NES onto our FPGA. We accomplished this through primarily SystemVerilog, with the only C code used being the code from Lab 6 used to read keyboard inputs using the NIOS-II processor. Our game functions as a platformer complete with two dimensional physics, collisions, a scrolling world, and game logic. The winning condition of the game is to reach the flag at the end, and the losing condition is either death from falling off the world screen or running out of time on the ten minute timer. The scoring for our game is dependent on the time remaining after completion of the level, meaning the objective of the game is to finish the level in as little time as possible.
 	
-2. Description of Our Final Design
-2.1 World Generation
+###2. Description of Our Final Design
+####2.1 World Generation
 
 Figure 1: 16x16 palette index table each type is 256 RGB values
 16x16 palette
 Our world was built by using a palette of all our background assets where each of the assets were 16x16 pixels which we stored in the palette_16_rom using inferred memory. Instead of using an additional palette for the colors we decided to store the full 24 bit RGB values of each pixel. This meant in order to store 1 16x16 block it used 24*256 = 6,144 bits and each address corresponds to a 24 bit RGB value. We used the Rishi helper tool to convert the assets (which were taken from mario sprite sheet) into hex values of the pixels going from left to right then the next line of the image. This gave us a .txt file of individual RGB values which were combined with the other image .txt file in the order shown in figure 1. We then used inferred ram to create the palette_rom module and we used the readmemh function to initialize the rom from the .txt file. We designed the 16x16 palette to work seamlessly with our future collision logic by putting the assets that should collide with mario to be in even indices. This is why there are some blank16 spaces which are 256 pixels of white so that we could maintain this order and also it helped with debugging.   
 
-World ROM
+#####World ROM
 After creating the palette of 16x16 blocks we are then able to create our world ROM. Since our screen had the dimension 480x640 the dimensions in terms of 16x16 blocks would be 30x40 which meant we could have a total 1,200 blocks on the screen. We created the world by making multiple frames with the 30x40 dimension where each space corresponds to an index in our 16x16 palette.
 
 Figure 2: Example .csv frame before processing

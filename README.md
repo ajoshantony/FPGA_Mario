@@ -6,7 +6,7 @@
 
 
 ### 1. Introduction 
-	Our Final Project was the program a game inspired by Super Mario Bros. for the NES onto our FPGA. We accomplished this through primarily SystemVerilog, with the only C code used being the code from Lab 6 used to read keyboard inputs using the NIOS-II processor. Our game functions as a platformer complete with two dimensional physics, collisions, a scrolling world, and game logic. The winning condition of the game is to reach the flag at the end, and the losing condition is either death from falling off the world screen or running out of time on the ten minute timer. The scoring for our game is dependent on the time remaining after completion of the level, meaning the objective of the game is to finish the level in as little time as possible.
+Our Final Project was the program a game inspired by Super Mario Bros. for the NES onto our FPGA. We accomplished this through primarily SystemVerilog, with the only C code used being the code from Lab 6 used to read keyboard inputs using the NIOS-II processor. Our game functions as a platformer complete with two dimensional physics, collisions, a scrolling world, and game logic. The winning condition of the game is to reach the flag at the end, and the losing condition is either death from falling off the world screen or running out of time on the ten minute timer. The scoring for our game is dependent on the time remaining after completion of the level, meaning the objective of the game is to finish the level in as little time as possible.
 	
 ### 2. Description of Our Final Design
 #### 2.1 World Generation

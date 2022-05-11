@@ -39,7 +39,9 @@ ft.close()
 Figure 3: python script that converts .csv that has the 16x16 palette base 10 indices into to a formatted .txt file with hex values 
 
 We made the world_rom similar to the palette_16_rom but we had to change the address and memory size to fit the 1200 line .txt file that initialized the ROM using the readmem function. After initializing we had to think about how to address each of the ROMs. We first addressed the world_rom through the following formula.
+```verilog 
 back_ADDR = (DrawXTemp[9:4]+logicalX/6)%40+ DrawY[9:4]*40 + (DrawXTemp[9:4]+logicalX/6)/40*1200;  
+```
 
 We had to %16 DrawX and DrawY for the dimensions for each of the blocks %40 for width of the 30x40 frame. The DrawXTemp was DrawX + 1 which was necessary to fix a shifted 
 indexing glitch for all of the background assets. In order to properly scroll through different frames we needed to add (DrawXTemp[9:4]+logicalX/6)/40*1200; so that we could get the correct slice of the 1,200 entries from one of the frames in world_rom. The logicalx was a register that stored number of blocks shifted*6 so that we could remember the correct frames while scrolling.  After we addressed a certain entry in world_rom we then used that output (sprite_index) to address the palette_16_rom so that we could print the correct pixel to the monitor. The addressing into palette_16_rom was calculated using the following formula.

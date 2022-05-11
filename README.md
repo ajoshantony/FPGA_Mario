@@ -45,14 +45,17 @@ back_ADDR = (DrawXTemp[9:4]+logicalX/6)%40+ DrawY[9:4]*40 + (DrawXTemp[9:4]+logi
 
 We had to %16 DrawX and DrawY for the dimensions for each of the blocks %40 for width of the 30x40 frame. The DrawXTemp was DrawX + 1 which was necessary to fix a shifted 
 indexing glitch for all of the background assets. In order to properly scroll through different frames we needed to add ``` verilog (DrawXTemp[9:4]+logicalX/6)/40*1200;``` so that we could get the correct slice of the 1,200 entries from one of the frames in world_rom. The logicalx was a register that stored number of blocks shifted*6 so that we could remember the correct frames while scrolling.  After we addressed a certain entry in world_rom we then used that output (sprite_index) to address the palette_16_rom so that we could print the correct pixel to the monitor. The addressing into palette_16_rom was calculated using the following formula.
-``` sprite_ADDR = (256*sprite_Index + DrawX[3:0]+DrawY[3:0]*16);```
+```verilog
+sprite_ADDR = (256*sprite_Index + DrawX[3:0]+DrawY[3:0]*16);
+```
 
 We needed to multiply the sprite_Index by 256 since that is how many colors there are for one block. Then to maintain the row major order we need to choose which of the 256 RGB based on ```DrawX[3:0]+DrawY[3:0]*16``` where the *16 was for the width of a block. The output from the palette_16_rom was set to the Red,Green,Blue variables for the VGA as the last else condition in an always_ff block @ posedge pixel_clk (RGB_Display block). An example of one of the frames’ output is shown in figure 4. It is the same frame that is depicted in figure 2.
 
 Figure 4: Example frame after processing
 Displaying Score
 Our gameTime was a register that stored the current gametime. This register was created in our ball.sv and the output was exported to the Color_Mappper.sv so that we could display the score. 
-``` time1_Index = gameTime/100;      time2_Index = (gameTime%100)/10;      time3_Index = gameTime%10; ```
+```verilog time1_Index = gameTime/100;      time2_Index = (gameTime%100)/10;      time3_Index = gameTime%10; 
+``
 
 We were able to get the individual numbers of the 3 digit gametime by /100 to get the hundreds place then %100 gets the bottom 2 numbers then /10 gets the 2nd number or the tens place in terms of the gameTime. In order to get the ones place number we just need to do %10. Each digit doubled as the index into the numbers_rom which stores a number sprite in order from 0-9.  An example of this indexing is shown below for the hundreds place digit which is similar to sprite_addr addressing except sprite_index is time1_index. 
 ``` verilog 

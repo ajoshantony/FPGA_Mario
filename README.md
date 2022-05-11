@@ -54,8 +54,9 @@ We needed to multiply the sprite_Index by 256 since that is how many colors ther
 Figure 4: Example frame after processing
 Displaying Score
 Our gameTime was a register that stored the current gametime. This register was created in our ball.sv and the output was exported to the Color_Mappper.sv so that we could display the score. 
-```verilog time1_Index = gameTime/100;      time2_Index = (gameTime%100)/10;      time3_Index = gameTime%10; 
-``
+```verilog 
+time1_Index = gameTime/100;      time2_Index = (gameTime%100)/10;      time3_Index = gameTime%10; 
+```
 
 We were able to get the individual numbers of the 3 digit gametime by /100 to get the hundreds place then %100 gets the bottom 2 numbers then /10 gets the 2nd number or the tens place in terms of the gameTime. In order to get the ones place number we just need to do %10. Each digit doubled as the index into the numbers_rom which stores a number sprite in order from 0-9.  An example of this indexing is shown below for the hundreds place digit which is similar to sprite_addr addressing except sprite_index is time1_index. 
 ``` verilog 

@@ -246,7 +246,6 @@ The clk_0 drives almost all of the components, and the slave/master connections 
 6. Design Resources and Statistics
 
 | **LUT**           | 6,261    |
-|-------------------|----------|
 | **DSP**           | 0        |
 | **Memory(BRAM)**  | "666,552 |
 | **Flip-Flop**     | 2,706    |

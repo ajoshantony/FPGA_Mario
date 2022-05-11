@@ -244,6 +244,7 @@ Connections
 The clk_0 drives almost all of the components, and the slave/master connections from the nios2 controlling the Avalon Memory Mapped Slave signals. All the reset signals are mapped to the clk_reset. There are three interrupt signals that can be sent from the timer_0, spi_0 and jtag_uart0 sent to the Nios II processor. These connections allow the NIOS-II to control the rest of our system
 
 6. Design Resources and Statistics
+
 | **LUT**           | 6,261    |
 |-------------------|----------|
 | **DSP**           | 0        |
@@ -253,6 +254,7 @@ The clk_0 drives almost all of the components, and the slave/master connections 
 | **Static Power**  | 96.84mW  |
 | **Dynamic Power** | 129.33mW |
 | **Total Power**   | 246.99mW |
+
 Figure : Design Resources
 7. Conclusion 
 Blanking period, og collisions hardcoded, scrolling background with diff frames, offset background graphics by 1,  

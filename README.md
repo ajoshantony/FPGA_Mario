@@ -45,17 +45,19 @@ back_ADDR = (DrawXTemp[9:4]+logicalX/6)%40+ DrawY[9:4]*40 + (DrawXTemp[9:4]+logi
 
 We had to %16 DrawX and DrawY for the dimensions for each of the blocks %40 for width of the 30x40 frame. The DrawXTemp was DrawX + 1 which was necessary to fix a shifted 
 indexing glitch for all of the background assets. In order to properly scroll through different frames we needed to add ``` verilog (DrawXTemp[9:4]+logicalX/6)/40*1200;``` so that we could get the correct slice of the 1,200 entries from one of the frames in world_rom. The logicalx was a register that stored number of blocks shifted*6 so that we could remember the correct frames while scrolling.  After we addressed a certain entry in world_rom we then used that output (sprite_index) to address the palette_16_rom so that we could print the correct pixel to the monitor. The addressing into palette_16_rom was calculated using the following formula.
-``` verilog sprite_ADDR = (256*sprite_Index + DrawX[3:0]+DrawY[3:0]*16);```
+``` sprite_ADDR = (256*sprite_Index + DrawX[3:0]+DrawY[3:0]*16);```
 
-We needed to multiply the sprite_Index by 256 since that is how many colors there are for one block. Then to maintain the row major order we need to choose which of the 256 RGB based on ```verilog DrawX[3:0]+DrawY[3:0]*16``` where the *16 was for the width of a block. The output from the palette_16_rom was set to the Red,Green,Blue variables for the VGA as the last else condition in an always_ff block @ posedge pixel_clk (RGB_Display block). An example of one of the frames’ output is shown in figure 4. It is the same frame that is depicted in figure 2.
+We needed to multiply the sprite_Index by 256 since that is how many colors there are for one block. Then to maintain the row major order we need to choose which of the 256 RGB based on ```DrawX[3:0]+DrawY[3:0]*16``` where the *16 was for the width of a block. The output from the palette_16_rom was set to the Red,Green,Blue variables for the VGA as the last else condition in an always_ff block @ posedge pixel_clk (RGB_Display block). An example of one of the frames’ output is shown in figure 4. It is the same frame that is depicted in figure 2.
 
 Figure 4: Example frame after processing
 Displaying Score
 Our gameTime was a register that stored the current gametime. This register was created in our ball.sv and the output was exported to the Color_Mappper.sv so that we could display the score. 
-``` verilog time1_Index = gameTime/100;      time2_Index = (gameTime%100)/10;      time3_Index = gameTime%10; ```
+``` time1_Index = gameTime/100;      time2_Index = (gameTime%100)/10;      time3_Index = gameTime%10; ```
 
 We were able to get the individual numbers of the 3 digit gametime by /100 to get the hundreds place then %100 gets the bottom 2 numbers then /10 gets the 2nd number or the tens place in terms of the gameTime. In order to get the ones place number we just need to do %10. Each digit doubled as the index into the numbers_rom which stores a number sprite in order from 0-9.  An example of this indexing is shown below for the hundreds place digit which is similar to sprite_addr addressing except sprite_index is time1_index. 
-``` verilog time1ADDR = 256*time1_Index + DrawX[3:0] + DrawY[3:0]*16;```
+``` verilog 
+time1ADDR = 256*time1_Index + DrawX[3:0] + DrawY[3:0]*16;
+```
 
 Animated Mystery Blocks
 In order to animate the mystery blocks we checked if the sprite_Index was indeed 6. We then used a 6 bit counter module to continuously count then overflow. We took advantage of this overflow by setting sprite_Index to 6 for the counter range [0,21), 8 for the counter [21,42), then 10 for counter [42,64] which made the animation cycle take around 1 second. We had a time1_on,time2_on, and time3_on values which were set when the DrawX and DrawY were in the region in the top right and within each of the respective digit regions. The Red, Green, and Blue values were set to the time (1,2, or 3) RGB value when the respective time on signal was on. 
@@ -63,8 +65,9 @@ Animated Mario
 
 Figure : All the Mario sprites in the animation order
 We had a counter_mario_ani module that was a 4 bit counter which we used to cycle through the indices (1-3) in the mario_ani_rom. The animation was done similarly to the mystery block except the range of the count was smaller since mario’s movement looked better when we cycled much faster. The default mario_ani_index was set to 0 which was his default standing sprite. We set the mario_ani_index to 1 for the counter range [0,5), 2 for the counter [5,11), then 3 for counter [11,16]. We had a lookDir signal (set by which keycode pressed) sent from ball.sv to signify mario’s current direction so that the sprite drawing would respect that. We also only stored one side of mario’s direction since we could simply read the sprite rgb values right to left instead of left to right saving us double the space. An example of this is shown below for Mario's standing sprite address. 
+```verilog 
 mario_ani_ADDR =(15-sprite_x) + sprite_y*16;
-
+```
 
 We had a ball_on signal which used the BallX and BallY signals from ball.sv to calculate a 16x16 box centered at the top left corner. The ball_on signal was 1 when Mario was in the certain DrawX and DrawY box. The output of the mario_ani_rom was mario_ani_RGB. The Red,Green and Blue signals were set to the mario_ani_RGB when ball_on was 1 and was not our transparent color 0xEE35FF. 
 (ball_on == 1'b1) && (mario_ani_RGB != 24'hee35ff) 
@@ -73,7 +76,9 @@ We had a ball_on signal which used the BallX and BallY signals from ball.sv to c
 2.2 Character Control/Collision
 Character Control
 	Mario is controlled by user input through the W, A, and D keys on a keyboard. The inputs are read and delivered to the FPGA through the NIOS-II processor. The motion logic is controlled by a set of four different velocity values indicating motion in all different directions. Velocity in this context can be interpreted as a number of pixels that Mario moves in any given direction per frame. Velocity is applied to the character by simply changing their position by some amount between frames, as is shown in this snippet of rightward motion:
-``` verilog X_Out = Ball_X_Pos + NetRight;```
+``` verilog 
+X_Out = Ball_X_Pos + NetRight;
+```
 
  The movement/controls can be separated into two distinct states: standing and jumping. In the standing state, the downward velocity is constant. It’s a simple downward velocity dragging the character down. The left and right velocities are dependent on key inputs. When A is held, the left velocity becomes equal to our speed variable (by default this is 2 pixels per frame). When D is held, then the right velocity becomes equal to our speed. The W key is used for jumping, and triggers a transition into the jumping state. In the jumping state, left and right movement is controlled the same as the standing state, but the vertical velocity is no longer constant. In the jumping state, the goal was to get a parabolic curve in our jump motion to represent realistic looking physics complete with a downward acceleration due to gravity. The desired jump motion should resemble the following:
 

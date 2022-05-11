@@ -64,7 +64,7 @@ time1ADDR = 256*time1_Index + DrawX[3:0] + DrawY[3:0]*16;
 ```
 
 Animated Mystery Blocks
-In order to animate the mystery blocks we checked if the sprite_Index was indeed 6. We then used a 6 bit counter module to continuously count then overflow. We took advantage of this overflow by setting sprite_Index to 6 for the counter range \[0,21), 8 for the counter `[`21,42), then 10 for counter `[`42,64`]` which made the animation cycle take around 1 second. We had a time1_on,time2_on, and time3_on values which were set when the DrawX and DrawY were in the region in the top right and within each of the respective digit regions. The Red, Green, and Blue values were set to the time (1,2, or 3) RGB value when the respective time on signal was on. 
+In order to animate the mystery blocks we checked if the sprite_Index was indeed 6. We then used a 6 bit counter module to continuously count then overflow. We took advantage of this overflow by setting sprite_Index to 6 for the counter range \[0,21), 8 for the counter \[21,42), then 10 for counter \[42,64\] which made the animation cycle take around 1 second. We had a time1_on,time2_on, and time3_on values which were set when the DrawX and DrawY were in the region in the top right and within each of the respective digit regions. The Red, Green, and Blue values were set to the time (1,2, or 3) RGB value when the respective time on signal was on. 
 Animated Mario
 
 Figure : All the Mario sprites in the animation order

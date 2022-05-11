@@ -245,6 +245,7 @@ The clk_0 drives almost all of the components, and the slave/master connections 
 
 6. Design Resources and Statistics
 
+|Resource           |Value     |
 |-------------------|----------|
 | **LUT**           | 6,261    |
 | **DSP**           | 0        |

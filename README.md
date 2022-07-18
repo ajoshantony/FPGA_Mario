@@ -2,7 +2,7 @@
 ## ECE 385 
 ## Spring 2022
 
-## BY: Michael Garrity and Ajosh Antony 
+## BY: Ajosh Antony and Michael Garrity
 
 
 ### 0. Foreword
